@@ -20,6 +20,12 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.listen(7555, () => {
-  console.log('Server running on http://localhost:7555');
+connection.connect(function(err) {
+  if (err) throw err;
+  else {
+    console.log('Database is connected!');
+    app.listen(7555, () => {
+      console.log('Server is running on http://localhost:7555');
+    });
+  }
 });
