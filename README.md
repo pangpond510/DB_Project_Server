@@ -1,3 +1,7 @@
+# **Objective**
+
+This repository is initiated for project of DB JAM team which is a part of 2110422 Database Management Systems Design subject of Chulalongkorn University. The objective of this project is to imitate database from Reg Chula system with provide core features to student, teacher, and officer. This repository works with front-end repository from <https://github.com/Borvornsak/DB_Project>.
+
 # **Preparation**
 
 ### **create docker container**
@@ -9,7 +13,7 @@
 	./docker/db.test.sh
 ```
 
-3.  Make sure that docker is running and start 'db.test' container. The container will run on port 3307.
+3.  Make sure that docker is running and start 'db.test' container every time when you start this project. The container will run on port 3307.
 
 ### **prepare database**
 
