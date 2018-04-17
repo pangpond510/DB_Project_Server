@@ -14,9 +14,10 @@ app.post('/login', (req, res) => {
       username: req.body.username,
       password: req.body.password
     })
-    .then(({ success }) => {
-      if (success) res.sendStatus(200);
+    .then(result => {
+      if (result.success) res.send(JSON.stringify(result.userInfo));
       else res.sendStatus(401);
+      res.end();
     });
 });
 
