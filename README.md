@@ -22,4 +22,4 @@
 * Username: testuser
 
 2.  conncet to database. use password: bN6t7rgcvSjjTVAn
-3.  import structure and data from ./docker/db.test.structure&data.sql
+3.  import structure and data from ./docker/db.test.dump.sql
