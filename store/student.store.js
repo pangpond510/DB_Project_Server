@@ -1,15 +1,11 @@
 const { query, isUserType } = require('./utils.js');
+const sql = require('./sql.js');
 
 const getGrade = async ({ id }) => {
   console.log(`Checking grade of user ${id}`);
   if (!isUserType(id, 'Student')) return { success: false };
 
-  const semesterInfo = await query(
-    `SELECT DISTINCT Year, Semester 
-        FROM Enroll 
-        WHERE Sid = '${id}' 
-        ORDER BY Year,Semester;`
-  );
+  const semesterInfo = await query(sql.yearSemesterQuery(id));
   let gradeInfo = {};
   let semesterList = [];
   let sumGradeX = 0;
@@ -20,11 +16,7 @@ const getGrade = async ({ id }) => {
     else if (semesterInfo[s].Semester === 'Second') term = 2;
     const year = semesterInfo[s].Year;
     const semester = `${year}/${term}`;
-    const courseInfo = await query(
-      `SELECT * 
-          FROM Enroll NATURAL JOIN Course
-          WHERE Sid = '${id}' AND Semester = '${semesterInfo[s].Semester}' AND Year = '${semesterInfo[s].Year}'`
-    );
+    const courseInfo = await query(sql.courseQuery(id, semesterInfo[s].Year, semesterInfo[s].Semester));
     let courseList = [];
     let sumGrade = 0;
     let sumCredit = 0;
@@ -63,7 +55,7 @@ const getInfo = async ({ id }) => {
   console.log(`Checking information of user ${id}`);
   if (!isUserType(id, 'Student')) return { success: false };
 
-  const userInfo = await query(`SELECT * FROM Student NATURAL JOIN Faculty WHERE Id = '${id}';`);
+  const userInfo = await query(sql.userInfoQuery(id, 'Student'));
   return {
     success: true,
     userInfo: {
