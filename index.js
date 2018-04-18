@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const userStore = require('./store/user.store.js');
+const studentStore = require('./store/student.store');
 const { connection } = require('./constant.js');
-const store = require('./store');
 
 const app = express();
 
@@ -9,7 +11,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 app.post('/login', (req, res) => {
-  store
+  userStore
     .authenticate({
       username: req.body.username,
       password: req.body.password
@@ -22,7 +24,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/user/student/:id/grade', (req, res) => {
-  store
+  studentStore
     .getGrade({
       id: req.params.id
     })
@@ -34,7 +36,7 @@ app.get('/user/student/:id/grade', (req, res) => {
 });
 
 app.get('/user/student/:id/info', (req, res) => {
-  store
+  studentStore
     .getInfo({
       id: req.params.id
     })
