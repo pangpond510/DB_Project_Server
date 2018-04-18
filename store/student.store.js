@@ -1,11 +1,15 @@
-const { query } = require('./utils.js');
+const { query, isUserType } = require('./utils.js');
 
 const getGrade = async ({ id }) => {
-  console.log(`checking grade of user id ${id}`);
-  const userType = await query(`SELECT UserType FROM User WHERE Id = '${id}';`);
-  if (userType[0].UserType !== 'Student') return { success: false };
+  console.log(`Checking grade of user ${id}`);
+  if (!isUserType(id, 'Student')) return { success: false };
 
-  const semesterInfo = await query(`SELECT DISTINCT Year, Semester FROM Enroll WHERE Sid = '${id}'`);
+  const semesterInfo = await query(
+    `SELECT DISTINCT Year, Semester 
+        FROM Enroll 
+        WHERE Sid = '${id}' 
+        ORDER BY Year,Semester;`
+  );
   let gradeInfo = {};
   let semesterList = [];
   let sumGradeX = 0;
@@ -40,9 +44,9 @@ const getGrade = async ({ id }) => {
     gradeInfo[semester] = {
       courseList,
       stat: {
-        gpa: sumGrade / sumCredit,
+        gpa: (sumGrade / sumCredit).toFixed(2),
         ca: sumCredit,
-        gpax: sumGradeX / sumCreditX,
+        gpax: (sumGradeX / sumCreditX).toFixed(2),
         cax: sumCreditX
       }
     };
@@ -56,6 +60,9 @@ const getGrade = async ({ id }) => {
 };
 
 const getInfo = async ({ id }) => {
+  console.log(`Checking information of user ${id}`);
+  if (!isUserType(id, 'Student')) return { success: false };
+
   const userInfo = await query(`SELECT * FROM Student NATURAL JOIN Faculty WHERE Id = '${id}';`);
   return {
     success: true,

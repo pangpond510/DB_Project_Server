@@ -26,28 +26,6 @@ describe('login feature', function() {
     json.should.have.own.property('lastName');
     json.userType.should.equal('Student');
   });
-  /*
-  it('login with existing teacher username and valid password', async function() {
-    const response = await login('teacher', '1234');
-    const json = await response.json();
-    response.status.should.equal(200);
-    json.should.have.own.property('id');
-    json.should.have.own.property('firstName');
-    json.should.have.own.property('lastName');
-    json.userType.should.equal('Teacher');
-  });
-  */
-  /*
-  it('login with existing officer username and valid password', async function() {
-    const response = await login('officer', '1234');
-    const json = await response.json();
-    response.status.should.equal(200);
-    json.should.have.own.property('id');
-    json.should.have.own.property('firstName');
-    json.should.have.own.property('lastName');
-    json.userType.should.equal('Officer');
-  });
-  */
   it('login with existing username and invalid password', async function() {
     const response = await login('student', '12345');
     response.status.should.equal(401);
