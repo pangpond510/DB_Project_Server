@@ -18,7 +18,7 @@ const login = async (username, password) => {
 
 describe('login feature', function() {
   it('login with existing student username and valid password', async function() {
-    const response = await login('5831060921', '1111111');
+    const response = await login('5831063821', '12345678');
     const json = await response.json();
     response.status.should.equal(200);
     json.should.have.own.property('id');

@@ -54,11 +54,10 @@ module.exports = {
   },
   getGrade: async ({ id }) => {
     console.log(`checking grade of user id ${id}`);
-    const UserType = await query(`SELECT UserType FROM User WHERE Id = '${id}';`);
-    if (UserType[0].UserType !== 'Student') return { success: false };
+    const userType = await query(`SELECT UserType FROM User WHERE Id = '${id}';`);
+    if (userType[0].UserType !== 'Student') return { success: false };
 
     const semesterInfo = await query(`SELECT DISTINCT Year, Semester FROM Enroll WHERE Sid = '${id}'`);
-    console.log(semesterInfo);
     let gradeInfo = {};
     let semesterList = [];
     let sumGradeX = 0;
@@ -69,7 +68,6 @@ module.exports = {
       else if (semesterInfo[s].Semester === 'Second') term = 2;
       const year = semesterInfo[s].Year;
       const semester = `${year}/${term}`;
-      //console.log(semester);
       const courseInfo = await query(
         `SELECT * 
             FROM Enroll NATURAL JOIN Course
@@ -80,7 +78,6 @@ module.exports = {
       let sumCredit = 0;
       for (const c in courseInfo) {
         const course = courseInfo[c];
-        console.log(course.Grade);
         sumGrade = sumGrade + course.Grade * course.Credit;
         sumCredit = sumCredit + course.Credit;
         courseList.push({
@@ -107,8 +104,29 @@ module.exports = {
       ...gradeInfo,
       semesterList
     };
-    console.log(gradeInfo);
-
     return { success: true, gradeInfo };
+  },
+  getInfo: async ({ id }) => {
+    const userInfo = await query(`SELECT * FROM Student NATURAL JOIN Faculty WHERE Id = '${id}';`);
+    return {
+      success: true,
+      userInfo: {
+        id: userInfo[0].Id,
+        ssn: userInfo[0].Ssn,
+        firstName: userInfo[0].FirstName,
+        lastName: userInfo[0].LastName,
+        tel: userInfo[0].Tel,
+        email: userInfo[0].Email,
+        address: {
+          houseNo: userInfo[0].HouseNumber,
+          road: userInfo[0].Road,
+          district: userInfo[0].District,
+          subDistrict: userInfo[0].SubDistrict,
+          province: userInfo[0].Province,
+          zipCode: userInfo[0].ZipCode
+        },
+        faculty: userInfo[0].FacultyName
+      }
+    };
   }
 };

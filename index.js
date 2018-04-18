@@ -21,13 +21,25 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.get('/user/:id/grade', (req, res) => {
+app.get('/user/student/:id/grade', (req, res) => {
   store
     .getGrade({
       id: req.params.id
     })
     .then(result => {
       if (result.success) res.send(JSON.stringify(result.gradeInfo));
+      else res.sendStatus(403);
+      res.end();
+    });
+});
+
+app.get('/user/student/:id/info', (req, res) => {
+  store
+    .getInfo({
+      id: req.params.id
+    })
+    .then(result => {
+      if (result.success) res.send(JSON.stringify(result.userInfo));
       else res.sendStatus(403);
       res.end();
     });
