@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const userStore = require('./store/user.store.js');
+const studentStore = require('./store/student.store');
 const { connection } = require('./constant.js');
-const store = require('./store');
 
 const app = express();
 
@@ -9,7 +11,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 app.post('/login', (req, res) => {
-  store
+  userStore
     .authenticate({
       username: req.body.username,
       password: req.body.password
@@ -17,6 +19,30 @@ app.post('/login', (req, res) => {
     .then(result => {
       if (result.success) res.send(JSON.stringify(result.userInfo));
       else res.sendStatus(401);
+      res.end();
+    });
+});
+
+app.get('/user/student/:id/grade', (req, res) => {
+  studentStore
+    .getGrade({
+      id: req.params.id
+    })
+    .then(result => {
+      if (result.success) res.send(JSON.stringify(result.gradeInfo));
+      else res.sendStatus(403);
+      res.end();
+    });
+});
+
+app.get('/user/student/:id/info', (req, res) => {
+  studentStore
+    .getInfo({
+      id: req.params.id
+    })
+    .then(result => {
+      if (result.success) res.send(JSON.stringify(result.userInfo));
+      else res.sendStatus(403);
       res.end();
     });
 });
