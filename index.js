@@ -21,6 +21,18 @@ app.post('/login', (req, res) => {
     });
 });
 
+app.get('/user/:id/grade', (req, res) => {
+  store
+    .getGrade({
+      id: req.params.id
+    })
+    .then(result => {
+      if (result.success) res.send(JSON.stringify(result.gradeInfo));
+      else res.sendStatus(403);
+      res.end();
+    });
+});
+
 connection.connect(function(err) {
   if (err) throw err;
   else {
