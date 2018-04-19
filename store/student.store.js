@@ -25,6 +25,7 @@ const getGrade = async ({ id }) => {
       sumGrade = sumGrade + course.Grade * course.Credit;
       sumCredit = sumCredit + course.Credit;
       courseList.push({
+        key: c,
         courseId: course.CourseId,
         courseName: course.CourseName,
         credit: course.Credit,
@@ -36,6 +37,7 @@ const getGrade = async ({ id }) => {
     gradeInfo[semester] = {
       courseList,
       stat: {
+        key: s,
         gpa: (sumGrade / sumCredit).toFixed(2),
         ca: sumCredit,
         gpax: (sumGradeX / sumCreditX).toFixed(2),
