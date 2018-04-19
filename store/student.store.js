@@ -10,25 +10,18 @@ const getGrade = async ({ id }) => {
   let sumGradeX = 0;
   let sumCreditX = 0;
   for (const s in semesterInfo) {
-    let term;
-    if (semesterInfo[s].Semester === 'First') term = 1;
-    else if (semesterInfo[s].Semester === 'Second') term = 2;
-    const year = semesterInfo[s].Year;
-    const semester = `${year}/${term}`;
-    const courseInfo = await query(sql.courseQuery(id, semesterInfo[s].Year, semesterInfo[s].Semester));
+    const semester = `${semesterInfo[s].year}/${semesterInfo[s].semester}`;
+    const courseInfo = await query(sql.courseQuery(id, semesterInfo[s].year, semesterInfo[s].semester));
     let courseList = [];
     let sumGrade = 0;
     let sumCredit = 0;
     for (const c in courseInfo) {
       const course = courseInfo[c];
-      sumGrade = sumGrade + course.Grade * course.Credit;
-      sumCredit = sumCredit + course.Credit;
+      sumGrade = sumGrade + course.grade * course.credit;
+      sumCredit = sumCredit + course.credit;
       courseList.push({
         key: c,
-        courseId: course.CourseId,
-        courseName: course.CourseName,
-        credit: course.Credit,
-        grade: course.Grade
+        ...course
       });
     }
     sumGradeX = sumGradeX + sumGrade;
@@ -57,31 +50,28 @@ const getInfo = async ({ id }) => {
 
   const userInfo = await query(sql.userInfoQuery(id, 'Student'));
   return {
-    id: userInfo[0].Id,
-    ssn: userInfo[0].Ssn,
-    firstName: userInfo[0].FirstName,
-    lastName: userInfo[0].LastName,
-    tel: userInfo[0].Tel,
-    email: userInfo[0].Email,
+    id: userInfo[0].id,
+    ssn: userInfo[0].ssn,
+    firstName: userInfo[0].firstName,
+    lastName: userInfo[0].lastName,
+    tel: userInfo[0].tel,
+    email: userInfo[0].email,
     address: {
-      houseNo: userInfo[0].HouseNumber,
-      road: userInfo[0].Road,
-      district: userInfo[0].District,
-      subDistrict: userInfo[0].SubDistrict,
-      province: userInfo[0].Province,
-      zipCode: userInfo[0].ZipCode
+      houseNo: userInfo[0].houseNumber,
+      road: userInfo[0].road,
+      district: userInfo[0].district,
+      subDistrict: userInfo[0].subDistrict,
+      province: userInfo[0].province,
+      zipCode: userInfo[0].zipCode
     },
-    faculty: userInfo[0].FacultyName
+    faculty: userInfo[0].facultyName
   };
 };
 
 const getAvailCourse = async ({ year, semester }) => {
   console.log(`Checking available course in semester ${year}/${semester}`);
 
-  let term;
-  if (semester == 1) term = 'First';
-  else if (semester == 2) term = 'Second';
-  const courseList = await query(sql.availCourseQuery(year, term));
+  const courseList = await query(sql.availCourseQuery(year, semester));
   return courseList;
 };
 

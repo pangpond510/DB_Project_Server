@@ -6,20 +6,15 @@ const authenticate = async ({ username, password }) => {
 
   const results = await query(sql.loginQuery(username));
 
-  if (results.length === 0 || password !== results[0].Password) {
+  if (results.length === 0 || password !== results[0].password) {
     return { success: false };
   }
 
-  const userInfo = await query(sql.userBasicInfoQuery(username, results[0].UserType));
+  const userInfo = await query(sql.userBasicInfoQuery(username, results[0].userType));
 
   return {
     success: true,
-    userInfo: {
-      id: userInfo[0].Id,
-      firstName: userInfo[0].FirstName,
-      lastName: userInfo[0].LastName,
-      userType: userInfo[0].UserType
-    }
+    userInfo: userInfo[0]
   };
 };
 

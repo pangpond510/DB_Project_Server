@@ -82,8 +82,8 @@ describe('get available course feature', function() {
   });
   it('providing only courses in specific semester', async function() {
     for (const c in json) {
-      json[c].Semester.should.equal('First');
-      json[c].Year.should.eql(2017);
+      json[c].semester.should.equal(1);
+      json[c].year.should.equal(2017);
     }
   });
 });
