@@ -1,51 +1,15 @@
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const userStore = require('./store/user.store.js');
-const studentStore = require('./store/student.store');
-const { connection } = require('./constant.js');
+const { connection, corsConfig } = require('./constant.js');
 
 const app = express();
 
-app.use(express.static('public'));
 app.use(bodyParser.json());
+app.use(cors(corsConfig));
 
-app.post('/login', (req, res) => {
-  userStore
-    .authenticate({
-      username: req.body.username,
-      password: req.body.password
-    })
-    .then(result => {
-      if (result.success) res.send(JSON.stringify(result.userInfo));
-      else res.sendStatus(401);
-      res.end();
-    });
-});
-
-app.get('/user/student/:id/grade', (req, res) => {
-  studentStore
-    .getGrade({
-      id: req.params.id
-    })
-    .then(result => {
-      if (result.success) res.send(JSON.stringify(result.gradeInfo));
-      else res.sendStatus(403);
-      res.end();
-    });
-});
-
-app.get('/user/student/:id/info', (req, res) => {
-  studentStore
-    .getInfo({
-      id: req.params.id
-    })
-    .then(result => {
-      if (result.success) res.send(JSON.stringify(result.userInfo));
-      else res.sendStatus(403);
-      res.end();
-    });
-});
+app.use('/', require('./router.js'));
 
 connection.connect(function(err) {
   if (err) throw err;

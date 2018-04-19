@@ -3,7 +3,6 @@ const sql = require('./sql.js');
 
 const getGrade = async ({ id }) => {
   console.log(`Checking grade of user ${id}`);
-  if (!isUserType(id, 'Student')) return { success: false };
 
   const semesterInfo = await query(sql.yearSemesterQuery(id));
   let gradeInfo = {};
@@ -50,37 +49,44 @@ const getGrade = async ({ id }) => {
     ...gradeInfo,
     semesterList
   };
-  return { success: true, gradeInfo };
+  return gradeInfo;
 };
 
 const getInfo = async ({ id }) => {
   console.log(`Checking information of user ${id}`);
-  if (!isUserType(id, 'Student')) return { success: false };
 
   const userInfo = await query(sql.userInfoQuery(id, 'Student'));
   return {
-    success: true,
-    userInfo: {
-      id: userInfo[0].Id,
-      ssn: userInfo[0].Ssn,
-      firstName: userInfo[0].FirstName,
-      lastName: userInfo[0].LastName,
-      tel: userInfo[0].Tel,
-      email: userInfo[0].Email,
-      address: {
-        houseNo: userInfo[0].HouseNumber,
-        road: userInfo[0].Road,
-        district: userInfo[0].District,
-        subDistrict: userInfo[0].SubDistrict,
-        province: userInfo[0].Province,
-        zipCode: userInfo[0].ZipCode
-      },
-      faculty: userInfo[0].FacultyName
-    }
+    id: userInfo[0].Id,
+    ssn: userInfo[0].Ssn,
+    firstName: userInfo[0].FirstName,
+    lastName: userInfo[0].LastName,
+    tel: userInfo[0].Tel,
+    email: userInfo[0].Email,
+    address: {
+      houseNo: userInfo[0].HouseNumber,
+      road: userInfo[0].Road,
+      district: userInfo[0].District,
+      subDistrict: userInfo[0].SubDistrict,
+      province: userInfo[0].Province,
+      zipCode: userInfo[0].ZipCode
+    },
+    faculty: userInfo[0].FacultyName
   };
+};
+
+const getAvailCourse = async ({ year, semester }) => {
+  console.log(`Checking available course in semester ${year}/${semester}`);
+
+  let term;
+  if (semester == 1) term = 'First';
+  else if (semester == 2) term = 'Second';
+  const courseList = await query(sql.availCourseQuery(year, term));
+  return courseList;
 };
 
 module.exports = {
   getGrade,
-  getInfo
+  getInfo,
+  getAvailCourse
 };

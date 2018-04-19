@@ -8,6 +8,11 @@ const connection = mysql.createConnection({
   database: 'db_testing'
 });
 
+const corsConfig = {
+  origin: true
+};
+
 module.exports = {
-  connection
+  connection,
+  corsConfig
 };
