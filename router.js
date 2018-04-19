@@ -5,6 +5,7 @@ const userStore = require('./store/user.store.js');
 const studentStore = require('./store/student.store.js');
 const teacherStore = require('./store/teacher.store.js');
 
+//user api
 router.post('/login', (req, res) => {
   userStore
     .authenticate({
@@ -18,6 +19,7 @@ router.post('/login', (req, res) => {
     });
 });
 
+//student api
 router.get('/student/:id/grade', (req, res) => {
   studentStore
     .getGrade({
@@ -52,6 +54,7 @@ router.get('/student/getAvailCourse/:year/:semester', (req, res) => {
     });
 });
 
+//teacher api
 router.get('/teacher/:id/adviseeGrade', (req, res) => {
   teacherStore
     .getAdviseeGrade({

@@ -17,9 +17,13 @@ describe('get current advisee grade feature', function() {
   it('get grade of all current advisees in ascending order', async function() {
     json[0].id.should.equal('5831063821');
   });
-  it('each advisee should have overall statistic', async function() {
+  it('each advisee should have overall statistics', async function() {
     json[0].should.have.own.property('id');
     json[0].should.have.own.property('GPAX');
     json[0].should.have.own.property('CAX');
+  });
+  it('calculate correct statistics', async function() {
+    json[0].GPAX.should.equal('3.50');
+    json[0].CAX.should.equal(18);
   });
 });
