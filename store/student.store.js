@@ -1,8 +1,8 @@
-const { query, isUserType } = require('./utils.js');
+const { query } = require('./utils.js');
 const sql = require('./sql.js');
 
 const getGrade = async ({ id }) => {
-  console.log(`Checking grade of user ${id}`);
+  console.log(`Checking grade of student ${id}`);
 
   const semesterInfo = await query(sql.yearSemesterQuery(id));
   let gradeInfo = {};
@@ -46,7 +46,7 @@ const getGrade = async ({ id }) => {
 };
 
 const getInfo = async ({ id }) => {
-  console.log(`Checking information of user ${id}`);
+  console.log(`Checking information of student ${id}`);
 
   const userInfo = await query(sql.userInfoQuery(id, 'Student'));
   return {

@@ -45,7 +45,7 @@ describe('get student grade feature', function() {
 describe('get student informaiton feature', function() {
   let response, json;
   before(async function() {
-    response = await getInfo('5831063821', '12345678');
+    response = await getInfo('5831063821');
     json = await response.json();
   });
   it('providing student id & ssn', async function() {

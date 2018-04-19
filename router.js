@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const userStore = require('./store/user.store.js');
-const studentStore = require('./store/student.store');
+const studentStore = require('./store/student.store.js');
+const teacherStore = require('./store/teacher.store.js');
 
 router.post('/login', (req, res) => {
   userStore
@@ -44,6 +45,17 @@ router.get('/student/getAvailCourse/:year/:semester', (req, res) => {
     .getAvailCourse({
       year: req.params.year,
       semester: req.params.semester
+    })
+    .then(result => {
+      res.send(JSON.stringify(result));
+      res.end();
+    });
+});
+
+router.get('/teacher/:id/adviseeGrade', (req, res) => {
+  teacherStore
+    .getAdviseeGrade({
+      id: req.params.id
     })
     .then(result => {
       res.send(JSON.stringify(result));
