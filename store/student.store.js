@@ -75,6 +75,54 @@ const getAvailCourse = async ({ year, semester }) => {
   return courseList;
 };
 
+const registerCourse = async ({ sid, courseId, section, semester, year }) => {
+  console.log(`stduent ${id} registers for course: ${courseId} section: ${section} semester: ${year}/${semester}`);
+
+  // check peroid ช่วงลงทะเบียนปกติ
+
+  await query(sql.addCourseQuery(sid, courseId, section, semester, year, 'Pending'));
+  return { success: true };
+};
+
+const addCourse = async ({ sid, courseId, section, semester, year }) => {
+  console.log(`stduent ${id} adds course: ${courseId} section: ${section} semester: ${year}/${semester}`);
+
+  // check enroll is not full
+  const result = query(sql.checkEnrollStatusQuery(courseId, section, semester, year, 'Studying'));
+  if (result[0].count >= result[0].maxEnrollment) return { success: false, message: `Course ${courseId} is full!` };
+
+  // check peroid ช่วงลดเพิ่ม
+
+  await query(sql.addCourseQuery(sid, courseId, section, semester, year, 'Studying'));
+  return { success: true };
+};
+
+const dropCourse = async ({ sid, courseId, section, semester, year }) => {
+  console.log(`stduent ${id} drops course: ${courseId} section: ${section} semester: ${year}/${semester}`);
+
+  // check enroll 'Studying'
+  const status = await query(sql.checkCourseStatus(sid, courseId, section, semester, year));
+  if (status[0] !== 'Studying') return { success: false, message: `User is not studying course ${courseId}` };
+
+  // check peroid ช่วงลดเพิ่ม
+
+  await query(sql.dropCourseQuery(sid, courseId, section, semester, year, 'Drop'));
+  return { success: true };
+};
+
+const withdrawCourse = async ({ sid, courseId, section, semester, year }) => {
+  console.log(`stduent ${id} withdraws course: ${courseId} section: ${section} semester: ${year}/${semester}`);
+
+  // check enroll 'Studying'
+  const status = await query(sql.checkCourseStatus(sid, courseId, section, semester, year));
+  if (status[0] !== 'Studying') return { success: false, message: `User is not studying course ${courseId}` };
+
+  // check peroid ช่วงถอน
+
+  await query(sql.dropCourseQuery(sid, courseId, section, semester, year, 'Withdraw'));
+  return { success: true };
+};
+
 module.exports = {
   getGrade,
   getInfo,
