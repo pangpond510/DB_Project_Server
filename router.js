@@ -54,6 +54,19 @@ router.get('/student/getAvailCourse/:year/:semester', (req, res) => {
     });
 });
 
+router.get('/student/getCourseSection/:courseId/:year/:semester', (req, res) => {
+  studentStore
+    .getCourseSection({
+      courseId: req.params.courseId,
+      year: req.params.year,
+      semester: req.params.semester
+    })
+    .then(result => {
+      res.send(JSON.stringify(result));
+      res.end();
+    });
+});
+
 //teacher api
 router.get('/teacher/:id/adviseeGrade', (req, res) => {
   teacherStore

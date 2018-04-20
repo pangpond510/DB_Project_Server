@@ -25,9 +25,14 @@ module.exports = {
     `SELECT * FROM ${userType} NATURAL JOIN Faculty WHERE id = '${id}';`,
 
   availCourseQuery: (year, semester) => 
-    `SELECT * FROM Course NATURAL JOIN Class 
+    `SELECT DISTINCT courseId, courseName, shortName, credit, semester, year FROM Course NATURAL JOIN Class 
       WHERE semester = ${semester} AND year = ${year} 
-      ORDER BY courseId, sectionNumber;`,
+      ORDER BY courseId;`,
+
+  courseSectionQuery: (courseId, year, semester) => 
+    `SELECT * FROM Course NATURAL JOIN Class 
+      WHERE courseId = '${courseId}' AND semester = ${semester} AND year = ${year} 
+      ORDER BY sectionNumber;`,
 
   adviseeGradeQuery: id => 
     `SELECT E.sId,sum(C.credit) AS sumCredit ,sum(C.credit*E.grade) AS sumGrade 

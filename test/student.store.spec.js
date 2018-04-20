@@ -22,6 +22,13 @@ const getAvailCourse = async (year, semester) => {
   return response;
 };
 
+const getCourseSection = async (courseId, year, semester) => {
+  const response = await fetch(`http://localhost:7555/student/getCourseSection/${courseId}/${year}/${semester}`, {
+    method: 'GET'
+  });
+  return response;
+};
+
 describe('get student grade feature', function() {
   let response, json;
   before(async function() {
@@ -80,10 +87,29 @@ describe('get available course feature', function() {
     response = await getAvailCourse(2017, 1);
     json = await response.json();
   });
-  it('providing only courses in specific semester', async function() {
+  it('first query will provide only courses in specific semester', async function() {
     for (const c in json) {
       json[c].semester.should.equal(1);
       json[c].year.should.equal(2017);
     }
   });
+  before(async function() {
+    response = await getCourseSection('2110313', 2017, 1);
+    json = await response.json();
+  });
+  it('second query will provide only specific course in specific semester', async function() {
+    for (const c in json) {
+      json[c].courseId.should.equal('2110313');
+      json[c].semester.should.equal(1);
+      json[c].year.should.equal(2017);
+    }
+  });
+  it('second query will provide all sections detail', async function() {
+    json[0].sectionNumber.should.equal('1');
+    json[1].sectionNumber.should.equal('2');
+    json[2].sectionNumber.should.equal('3');
+    json[3].sectionNumber.should.equal('33');
+  });
 });
+
+describe('get available course feature', function() {});

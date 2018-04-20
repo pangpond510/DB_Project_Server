@@ -75,8 +75,16 @@ const getAvailCourse = async ({ year, semester }) => {
   return courseList;
 };
 
+const getCourseSection = async ({ courseId, year, semester }) => {
+  console.log(`Checking detail for course ${courseId} in semester ${year}/${semester}`);
+
+  const courseList = await query(sql.courseSectionQuery(courseId, year, semester));
+  return courseList;
+};
+
 module.exports = {
   getGrade,
   getInfo,
-  getAvailCourse
+  getAvailCourse,
+  getCourseSection
 };
