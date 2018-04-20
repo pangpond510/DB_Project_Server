@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const userStore = require('./store/user.store.js');
-const studentStore = require('./store/student.store.js');
-const teacherStore = require('./store/teacher.store.js');
+const userStore = require('../store/user.store.js');
+const studentStore = require('../store/student.store.js');
+const teacherStore = require('../store/teacher.store.js');
 
 //user api
 router.post('/login', (req, res) => {

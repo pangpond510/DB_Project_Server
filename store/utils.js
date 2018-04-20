@@ -1,4 +1,4 @@
-const { connection } = require('../constant.js');
+const { connection } = require('../src/constant.js');
 const sql = require('./sql.js');
 
 const query = sql => {
