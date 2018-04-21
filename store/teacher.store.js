@@ -12,6 +12,8 @@ const getAdviseeGrade = async ({ id }) => {
   result.forEach((element, index) => {
     adviseeGrade.push({
       key: index,
+      firstName: element.firstName,
+      lastName: element.lastName,
       id: element.sId,
       GPAX: (element.sumGrade / element.sumCredit).toFixed(2),
       CAX: element.sumCredit

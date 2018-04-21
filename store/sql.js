@@ -35,7 +35,7 @@ module.exports = {
       ORDER BY sectionNumber;`,
 
   adviseeGradeQuery: id => 
-    `SELECT E.sId,sum(C.credit) AS sumCredit ,sum(C.credit*E.grade) AS sumGrade 
-      FROM (Enroll E NATURAL JOIN Course C) INNER JOIN Advise A ON E.sId = A.sId
+    `SELECT S.firstName, S.lastName, E.sId,sum(C.credit) AS sumCredit ,sum(C.credit*E.grade) AS sumGrade 
+      FROM ((Enroll E NATURAL JOIN Course C) INNER JOIN Student S ON E.sId = S.id) INNER JOIN Advise A ON E.sId = A.sId
       WHERE A.tid = '${id}' GROUP BY E.sId ORDER BY E.sId;`
 };
