@@ -1,10 +1,10 @@
 // prettier-ignore
 
 module.exports = {
-  typeQuery: id => 
+  typeQuery: (id) => 
     `SELECT userType FROM User WHERE id = '${id}';`,
 
-  loginQuery: id => 
+  loginQuery: (id) => 
     `SELECT * FROM User WHERE id = '${id}';`,
 
   userBasicInfoQuery: (id, userType) => 
@@ -12,7 +12,7 @@ module.exports = {
       FROM ${userType} NATURAL JOIN User 
       WHERE id = '${id}';`,
 
-  yearSemesterQuery: id => 
+  yearSemesterQuery: (id) => 
     `SELECT DISTINCT year, semester 
       FROM Enroll WHERE sId = '${id}' 
       ORDER BY year,semester;`,
@@ -29,7 +29,7 @@ module.exports = {
       WHERE semester = ${semester} AND year = ${year} 
       ORDER BY courseId, sectionNumber;`,
 
-  adviseeFradeQuery: id => 
+  adviseeFradeQuery: (id) => 
     `SELECT E.sId,sum(C.credit) AS sumCredit ,sum(C.credit*E.grade) AS sumGrade 
       FROM (Enroll E NATURAL JOIN Course C) INNER JOIN Advise A ON E.sId = A.sId
       WHERE A.tid = '${id}' GROUP BY E.sId ORDER BY E.sId;`,
@@ -51,5 +51,10 @@ module.exports = {
       
   checkCourseStatus: (sid, courseId, section, semester, year) => 
     `SELECT status from Enroll
-	    WHERE sId = '${sid}' AND courseId = '${courseId}' AND sectionNumber = '${section}' AND year = ${year} AND semester = ${semester};`
+      WHERE sId = '${sid}' AND courseId = '${courseId}' AND sectionNumber = '${section}' AND year = ${year} AND semester = ${semester};`,
+      
+  checkPendingCourse: (sid) => 
+    `SELECT courseId, courseName, shortName, sectionNumber, credit 
+      FROM Enroll NATURAL JOIN Course 
+      WHERE sId = '${sid}' AND status = 'Pending'`
 };

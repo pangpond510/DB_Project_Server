@@ -54,6 +54,24 @@ router.get('/student/getAvailCourse/:year/:semester', (req, res) => {
     });
 });
 
+router.post('/student/register', (req, res) => {
+  studentStore.registerCourse(req.body).then(result => {
+    res.sendStatus(result.status);
+    res.end();
+  });
+});
+
+router.get('/student/:id/getCoursePendingList', (req, res) => {
+  studentStore
+    .getCoursePendingList({
+      id: req.params.id
+    })
+    .then(result => {
+      res.send(JSON.stringify(result));
+      res.end();
+    });
+});
+
 //teacher api
 router.get('/teacher/:id/adviseeGrade', (req, res) => {
   teacherStore
