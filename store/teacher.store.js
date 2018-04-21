@@ -9,8 +9,9 @@ const getAdviseeGrade = async ({ id }) => {
   console.log(result);
 
   let adviseeGrade = [];
-  result.forEach(element => {
+  result.forEach((element, index) => {
     adviseeGrade.push({
+      key: index,
       id: element.sId,
       GPAX: (element.sumGrade / element.sumCredit).toFixed(2),
       CAX: element.sumCredit
