@@ -6,8 +6,6 @@ const getAdviseeGrade = async ({ id }) => {
 
   const result = await query(sql.adviseeGradeQuery(id));
 
-  console.log(result);
-
   let adviseeGrade = [];
   result.forEach((element, index) => {
     adviseeGrade.push({
@@ -19,7 +17,6 @@ const getAdviseeGrade = async ({ id }) => {
       CAX: element.sumCredit
     });
   });
-
   return adviseeGrade;
 };
 

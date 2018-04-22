@@ -67,6 +67,55 @@ router.get('/student/getCourseSection/:courseId/:year/:semester', (req, res) => 
     });
 });
 
+router.post('/student/register', (req, res) => {
+  if (req.body.option === 'register') {
+    studentStore.registerCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else if (req.body.option === 'add') {
+    studentStore.addCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else if (req.body.option === 'drop') {
+    studentStore.dropCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else if (req.body.option === 'withdraw') {
+    studentStore.withdrawCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else {
+    res.sendStatus(400);
+    res.end();
+  }
+});
+
+router.get('/student/:id/getCoursePendingList', (req, res) => {
+  studentStore
+    .getCoursePendingList({
+      id: req.params.id
+    })
+    .then(result => {
+      res.send(JSON.stringify(result));
+      res.end();
+    });
+});
+
+router.get('/student/:id/getRegisterResult', (req, res) => {
+  studentStore
+    .getRegisterResult({
+      id: req.params.id
+    })
+    .then(result => {
+      res.send(JSON.stringify(result));
+      res.end();
+    });
+});
+
 //teacher api
 router.get('/teacher/:id/adviseeGrade', (req, res) => {
   teacherStore

@@ -82,9 +82,118 @@ const getCourseSection = async ({ courseId, year, semester }) => {
   return courseList;
 };
 
+const registerCourse = async ({ id, courseId, section, semester, year }) => {
+  process.stdout.write(`stduent ${id} registers for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
+
+  // check peroid ช่วงลงทะเบียนปกติ
+
+  try {
+    await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Pending'));
+  } catch (error) {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+  console.log('DONE!!');
+  return { status: 200 };
+};
+
+const addCourse = async ({ id, courseId, section, semester, year }) => {
+  process.stdout.write(`stduent ${id} adds for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
+
+  // check enroll is not full
+  const result = await query(sql.checkEnrollCountQuery(courseId, section, semester, year, 'Studying'));
+  if (result[0] && result[0].count >= result[0].maxEnrollment) {
+    console.log('FAIL!! 1');
+    return { status: 400 };
+  }
+
+  // check peroid ช่วงลดเพิ่ม
+
+  try {
+    await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Studying'));
+  } catch (error) {
+    console.log('FAIL!! 2');
+    return { status: 400 };
+  }
+
+  console.log('DONE!!');
+  return { status: 200 };
+};
+
+const dropCourse = async ({ id, courseId, section, semester, year }) => {
+  process.stdout.write(`stduent ${id} drops for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
+
+  // check enroll 'Studying'
+  const status = await query(sql.checkCourseStatus(id, courseId, section, semester, year));
+  if (status[0].status !== 'Studying') {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+
+  // check peroid ช่วงลดเพิ่ม
+
+  try {
+    await query(sql.dropCourseQuery(id, courseId, section, semester, year, 'Drop'));
+  } catch (error) {
+    console.log(error);
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+
+  console.log('DONE!!');
+  return { status: 200 };
+};
+
+const withdrawCourse = async ({ id, courseId, section, semester, year }) => {
+  process.stdout.write(`stduent ${id} withdraws for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
+
+  // check enroll 'Studying'
+  const status = await query(sql.checkCourseStatus(id, courseId, section, semester, year));
+  if (status[0].status !== 'Studying') {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+
+  // check peroid ช่วงถอน
+
+  try {
+    await query(sql.dropCourseQuery(id, courseId, section, semester, year, 'Withdraw'));
+  } catch (error) {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+
+  console.log('DONE!!');
+  return { status: 200 };
+};
+
+const getCoursePendingList = async ({ id }) => {
+  console.log(`get course pending list of student ${id}`);
+
+  const courseList = query(sql.checkPendingCourse(id));
+  return courseList;
+};
+
+const getRegisterResult = async ({ id }) => {
+  console.log(`check register result of student ${id}`);
+
+  // get semester and year
+  semester = 2;
+  year = 2017;
+
+  const courseList = query(sql.checkRegisterResult(id, semester, year));
+  return courseList;
+};
+
 module.exports = {
   getGrade,
   getInfo,
   getAvailCourse,
-  getCourseSection
+  getCourseSection,
+  registerCourse,
+  addCourse,
+  dropCourse,
+  withdrawCourse,
+  getCoursePendingList,
+  getRegisterResult
 };
