@@ -91,42 +91,73 @@ const registerCourse = async ({ id, courseId, section, semester, year }) => {
 };
 
 const addCourse = async ({ id, courseId, section, semester, year }) => {
-  console.log(`stduent ${id} adds course: ${courseId} section: ${section} semester: ${year}/${semester}`);
+  process.stdout.write(`stduent ${id} adds for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
   // check enroll is not full
-  const result = query(sql.checkEnrollStatusQuery(courseId, section, semester, year, 'Studying'));
-  if (result[0].count >= result[0].maxEnrollment) return { success: false, message: `Course ${courseId} is full!` };
+  const result = await query(sql.checkEnrollCountQuery(courseId, section, semester, year, 'Studying'));
+  if (result[0] && result[0].count >= result[0].maxEnrollment) {
+    console.log('FAIL!! 1');
+    return { status: 400 };
+  }
 
   // check peroid ช่วงลดเพิ่ม
 
-  await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Studying'));
-  return { success: true };
+  try {
+    await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Studying'));
+  } catch (error) {
+    console.log('FAIL!! 2');
+    return { status: 400 };
+  }
+
+  console.log('DONE!!');
+  return { status: 200 };
 };
 
 const dropCourse = async ({ id, courseId, section, semester, year }) => {
-  console.log(`stduent ${id} drops course: ${courseId} section: ${section} semester: ${year}/${semester}`);
+  process.stdout.write(`stduent ${id} drops for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
   // check enroll 'Studying'
   const status = await query(sql.checkCourseStatus(id, courseId, section, semester, year));
-  if (status[0] !== 'Studying') return { success: false, message: `User is not studying course ${courseId}` };
+  if (status[0].status !== 'Studying') {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
 
   // check peroid ช่วงลดเพิ่ม
 
-  await query(sql.dropCourseQuery(id, courseId, section, semester, year, 'Drop'));
-  return { success: true };
+  try {
+    await query(sql.dropCourseQuery(id, courseId, section, semester, year, 'Drop'));
+  } catch (error) {
+    console.log(error);
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+
+  console.log('DONE!!');
+  return { status: 200 };
 };
 
 const withdrawCourse = async ({ id, courseId, section, semester, year }) => {
-  console.log(`stduent ${id} withdraws course: ${courseId} section: ${section} semester: ${year}/${semester}`);
+  process.stdout.write(`stduent ${id} withdraws for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
   // check enroll 'Studying'
   const status = await query(sql.checkCourseStatus(id, courseId, section, semester, year));
-  if (status[0] !== 'Studying') return { success: false, message: `User is not studying course ${courseId}` };
+  if (status[0].status !== 'Studying') {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
 
   // check peroid ช่วงถอน
 
-  await query(sql.dropCourseQuery(id, courseId, section, semester, year, 'Withdraw'));
-  return { success: true };
+  try {
+    await query(sql.dropCourseQuery(id, courseId, section, semester, year, 'Withdraw'));
+  } catch (error) {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+
+  console.log('DONE!!');
+  return { status: 200 };
 };
 
 const getCoursePendingList = async ({ id }) => {
@@ -141,5 +172,8 @@ module.exports = {
   getInfo,
   getAvailCourse,
   registerCourse,
+  addCourse,
+  dropCourse,
+  withdrawCourse,
   getCoursePendingList
 };

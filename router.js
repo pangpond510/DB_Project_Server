@@ -55,10 +55,30 @@ router.get('/student/getAvailCourse/:year/:semester', (req, res) => {
 });
 
 router.post('/student/register', (req, res) => {
-  studentStore.registerCourse(req.body).then(result => {
-    res.sendStatus(result.status);
+  if (req.body.option === 'register') {
+    studentStore.registerCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else if (req.body.option === 'add') {
+    studentStore.addCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else if (req.body.option === 'drop') {
+    studentStore.dropCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else if (req.body.option === 'withdraw') {
+    studentStore.withdrawCourse(req.body.detail).then(result => {
+      res.sendStatus(result.status);
+      res.end();
+    });
+  } else {
+    res.sendStatus(400);
     res.end();
-  });
+  }
 });
 
 router.get('/student/:id/getCoursePendingList', (req, res) => {

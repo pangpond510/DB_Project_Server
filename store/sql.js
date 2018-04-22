@@ -40,7 +40,7 @@ module.exports = {
       
   dropCourseQuery: (sid, courseId, section, semester, year, option) => 
     `UPDATE Enroll
-      SET status = '${Option}'
+      SET status = '${option}'
       WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester};`,
 
   checkEnrollCountQuery: (courseId, section, semester, year, status) => 
