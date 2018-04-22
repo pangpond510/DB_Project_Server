@@ -7,7 +7,7 @@ fetch('http://localhost:7555/student/register', {
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    option: 'withdraw',
+    option: 'add',
     detail: {
       id: '5831063821',
       courseId: '2110422',

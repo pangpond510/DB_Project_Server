@@ -161,9 +161,20 @@ const withdrawCourse = async ({ id, courseId, section, semester, year }) => {
 };
 
 const getCoursePendingList = async ({ id }) => {
-  console.log(`get course pending list for student ${id}`);
+  console.log(`get course pending list of student ${id}`);
 
   const courseList = query(sql.checkPendingCourse(id));
+  return courseList;
+};
+
+const getRegisterResult = async ({ id }) => {
+  console.log(`check register result of student ${id}`);
+
+  // get semester and year
+  semester = 2;
+  year = 2017;
+
+  const courseList = query(sql.checkRegisterResult(id, semester, year));
   return courseList;
 };
 
@@ -175,5 +186,6 @@ module.exports = {
   addCourse,
   dropCourse,
   withdrawCourse,
-  getCoursePendingList
+  getCoursePendingList,
+  getRegisterResult
 };

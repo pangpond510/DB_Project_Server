@@ -92,6 +92,17 @@ router.get('/student/:id/getCoursePendingList', (req, res) => {
     });
 });
 
+router.get('/student/:id/getRegisterResult', (req, res) => {
+  studentStore
+    .getRegisterResult({
+      id: req.params.id
+    })
+    .then(result => {
+      res.send(JSON.stringify(result));
+      res.end();
+    });
+});
+
 //teacher api
 router.get('/teacher/:id/adviseeGrade', (req, res) => {
   teacherStore

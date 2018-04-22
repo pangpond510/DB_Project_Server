@@ -56,5 +56,10 @@ module.exports = {
   checkPendingCourse: (sid) => 
     `SELECT courseId, courseName, shortName, sectionNumber, credit 
       FROM Enroll NATURAL JOIN Course 
-      WHERE sId = '${sid}' AND status = 'Pending'`
+      WHERE sId = '${sid}' AND status = 'Pending'`,
+
+  checkRegisterResult: (sid, semester, year) => 
+    `SELECT courseId, courseName, shortName, sectionNumber, credit 
+      FROM Enroll NATURAL JOIN Course 
+      WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND ( status = 'Studying' OR status = 'Denied')`
 };
