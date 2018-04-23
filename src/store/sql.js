@@ -48,6 +48,14 @@ module.exports = {
       SET status = '${option}'
       WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester};`,
 
+  checkCourseCanRegister: (sid, courseId) => 
+    `SELECT * from Enroll
+      WHERE sId = '${sid}' AND courseId = '${courseId}' AND (status = 'Finish' OR status = 'Pending' OR status = 'Studying');`,
+
+  undoRegister: (id, courseId, section, semester, year) => 
+    `DELETE FROM Enroll 
+      WHERE courseId = '${courseId}' and sId = '${id}' and sectionNumber = '${section}' and year = ${year} and semester = ${semester} and status = 'Pending';`,
+
   checkEnrollCountQuery: (courseId, section, semester, year, status) => 
     `SELECT courseId, sectionNumber, year, semester, count(sId) AS count, maxEnrollment
       FROM Enroll NATURAL JOIN Class
@@ -58,10 +66,6 @@ module.exports = {
     `SELECT status from Enroll
       WHERE sId = '${sid}' AND courseId = '${courseId}' AND sectionNumber = '${section}' AND year = ${year} AND semester = ${semester};`,
 
-  checkCourseStatusHistory: (sid, courseId) => 
-    `SELECT status from Enroll
-      WHERE sId = '${sid}' AND courseId = '${courseId}';`,
-      
   checkPendingCourse: (sid, semester, year) => 
     `SELECT courseId, courseName, shortName, sectionNumber, credit 
       FROM Enroll NATURAL JOIN Course 
