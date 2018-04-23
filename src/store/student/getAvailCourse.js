@@ -9,9 +9,11 @@ const getAvailCourseApi = (req, res) => {
 };
 
 const getAvailCourse = async ({ year, semester }) => {
-  console.log(`Checking available course in semester ${year}/${semester}`);
+  process.stdout.write(`Checking available course in semester ${year}/${semester} . . . `);
 
   const courseList = await query(sql.availCourseQuery(year, semester));
+
+  console.log('DONE!!');
   return courseList;
 };
 

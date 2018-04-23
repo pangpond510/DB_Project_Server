@@ -9,9 +9,11 @@ const getInfoApi = (req, res) => {
 };
 
 const getInfo = async ({ id }) => {
-  console.log(`Checking information of student ${id}`);
+  process.stdout.write(`Checking information of student ${id} . . . `);
 
   const userInfo = await query(sql.userInfoQuery(id, 'Student'));
+
+  console.log('DONE!!');
   return {
     id: userInfo[0].id,
     ssn: userInfo[0].ssn,

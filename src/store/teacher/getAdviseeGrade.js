@@ -1,8 +1,15 @@
-const { query } = require('./utils.js');
-const sql = require('./sql.js');
+const { query } = require('../utils.js');
+const sql = require('../sql.js');
+
+const getAdviseeGradeApi = (req, res) => {
+  getAdviseeGrade(req.params).then(result => {
+    res.send(JSON.stringify(result));
+    res.end();
+  });
+};
 
 const getAdviseeGrade = async ({ id }) => {
-  console.log(`Checking advisee grade of advisor ${id}`);
+  process.stdout.write(`Checking advisee grade of advisor ${id} . . . `);
 
   const result = await query(sql.adviseeGradeQuery(id));
 
@@ -17,9 +24,9 @@ const getAdviseeGrade = async ({ id }) => {
       CAX: element.sumCredit
     });
   });
+
+  console.log('DONE!!');
   return adviseeGrade;
 };
 
-module.exports = {
-  getAdviseeGrade
-};
+module.exports = getAdviseeGradeApi;

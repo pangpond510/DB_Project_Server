@@ -31,6 +31,16 @@ const registerCourseApi = (req, res) => {
 const registerCourse = async ({ id, courseId, section, semester, year }) => {
   process.stdout.write(`stduent ${id} registers for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
+  //check not studying or pass this course
+  const status = await query(sql.checkCourseStatusHistory(id, courseId));
+  for (let i = 0; i < status.length; i++) {
+    const s = status[i];
+    if (s.status === 'Studying' || s.status === 'Finish') {
+      console.log('FAIL!!');
+      return { status: 400 };
+    }
+  }
+
   // check peroid ช่วงลงทะเบียนปกติ
 
   try {
@@ -51,6 +61,16 @@ const addCourse = async ({ id, courseId, section, semester, year }) => {
   if (result[0] && result[0].count >= result[0].maxEnrollment) {
     console.log('FAIL!!');
     return { status: 400 };
+  }
+
+  //check not studying or pass this course
+  const status = await query(sql.checkCourseStatusHistory(id, courseId));
+  for (let i = 0; i < status.length; i++) {
+    const s = status[i];
+    if (s.status === 'Studying' || s.status === 'Finish') {
+      console.log('FAIL!!');
+      return { status: 400 };
+    }
   }
 
   // check peroid ช่วงลดเพิ่ม

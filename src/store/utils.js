@@ -10,6 +10,10 @@ const query = sql => {
   });
 };
 
+const openConnection = () => {
+  connection.connect();
+};
+
 const closeConnection = () => {
   connection.end();
 };
@@ -23,6 +27,7 @@ const isUserType = async (id, userType) => {
 
 module.exports = {
   query,
+  openConnection,
   closeConnection,
   isUserType
 };

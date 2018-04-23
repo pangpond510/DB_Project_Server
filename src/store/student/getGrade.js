@@ -9,7 +9,7 @@ const getGradeApi = (req, res) => {
 };
 
 const getGrade = async ({ id }) => {
-  console.log(`Checking grade of student ${id}`);
+  process.stdout.write(`Checking grade of student ${id} . . . `);
 
   const semesterInfo = await query(sql.yearSemesterQuery(id));
   let gradeInfo = {};
@@ -49,6 +49,8 @@ const getGrade = async ({ id }) => {
     ...gradeInfo,
     semesterList
   };
+
+  console.log('DONE!!');
   return gradeInfo;
 };
 

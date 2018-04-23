@@ -9,9 +9,11 @@ const getCourseSectionApi = (req, res) => {
 };
 
 const getCourseSection = async ({ courseId, year, semester }) => {
-  console.log(`Checking detail for course ${courseId} in semester ${year}/${semester}`);
+  process.stdout.write(`Checking detail for course ${courseId} in semester ${year}/${semester} . . . `);
 
   const courseList = await query(sql.courseSectionQuery(courseId, year, semester));
+
+  console.log('DONE!!');
   return courseList;
 };
 

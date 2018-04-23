@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const should = require('chai').should();
-const { query, closeConnection } = require('../src/store/utils.js');
+const { query, closeConnection, openConnection } = require('../src/store/utils.js');
 
 const getGrade = async id => {
   const response = await fetch(`http://localhost:7555/student/${id}/grade`, {
@@ -47,6 +47,13 @@ const registerCourse = async (option, id, courseId, section, semester, year) => 
         year
       }
     })
+  });
+  return response;
+};
+
+const getCoursePendingList = async id => {
+  const response = await fetch(`http://localhost:7555/student/${id}/getCoursePendingList`, {
+    method: 'GET'
   });
   return response;
 };
@@ -135,63 +142,76 @@ describe('get available course feature', function() {
 });
 
 describe('register course feature', function() {
+  before(async function() {
+    openConnection();
+    await query(`INSERT INTO Course VALUES ('1111111','Test Course','TC',0)`);
+    await query(`INSERT INTO Class VALUES ('1111111','1',2017,2,10)`);
+    await query(`INSERT INTO Class VALUES ('1111111','0',2017,2,1)`);
+  });
   it('can register course', async function() {
-    const response = await registerCourse('register', '5831063821', '2110422', '33', 2, 2017);
+    const response = await registerCourse('register', '5831063821', '1111111', '1', 2, 2017);
     response.status.should.equal(200);
     const status = await query(
-      `SELECT status from Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`
+      `SELECT status from Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`
     );
     status[0].status.should.equal('Pending');
-    await query(`DELETE FROM Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`);
+    await query(`DELETE FROM Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`);
   });
   it('can add course', async function() {
-    const response = await registerCourse('add', '5831063821', '2110422', '33', 2, 2017);
+    const response = await registerCourse('add', '5831063821', '1111111', '1', 2, 2017);
     response.status.should.equal(200);
     const status = await query(
-      `SELECT status from Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`
+      `SELECT status from Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`
     );
     status[0].status.should.equal('Studying');
-    await query(`DELETE FROM Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`);
+    await query(`DELETE FROM Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`);
   });
   it('cannot add course that is full', async function() {
-    await query(`INSERT INTO Class VALUES ('2110422','0',2017,2,1)`);
-    await registerCourse('add', 'student', '2110422', '0', 2, 2017);
-
-    const response = await registerCourse('add', '58310638', '2110422', '0', 2, 2017);
+    await registerCourse('add', 'student', '1111111', '0', 2, 2017);
+    const response = await registerCourse('add', '58310638', '1111111', '0', 2, 2017);
     response.status.should.equal(400);
 
-    await query(`DELETE FROM Enroll WHERE courseId = '2110422' and sId = 'student' and sectionNumber = '0' and year = 2017 and semester = 2;`);
-    await query(`DELETE FROM Class WHERE courseId = '2110422' and sectionNumber = '0' and year = 2017 and semester = 2 ;`);
+    await query(`DELETE FROM Enroll WHERE courseId = '1111111' and sId = 'student' and sectionNumber = '0' and year = 2017 and semester = 2;`);
+  });
+  it('cannot add course that student is studying in other section or already finish', async function() {
+    await registerCourse('add', '5831063821', '1111111', '0', 2, 2017);
+    const response = await registerCourse('add', '5831063821', '1111111', '1', 2, 2017);
+    response.status.should.equal(400);
+
+    await query(`DELETE FROM Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '0' and year = 2017 and semester = 2;`);
   });
   it('can drop course that student is studying', async function() {
-    await registerCourse('add', '5831063821', '2110422', '33', 2, 2017);
-    const response = await registerCourse('drop', '5831063821', '2110422', '33', 2, 2017);
+    await registerCourse('add', '5831063821', '1111111', '1', 2, 2017);
+    const response = await registerCourse('drop', '5831063821', '1111111', '1', 2, 2017);
     response.status.should.equal(200);
     const status = await query(
-      `SELECT status from Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`
+      `SELECT status from Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`
     );
     status[0].status.should.equal('Drop');
-    await query(`DELETE FROM Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`);
+    await query(`DELETE FROM Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`);
   });
   it('cannot drop course that student is not studying', async function() {
-    const response = await registerCourse('drop', '5831063821', '2110422', '33', 2, 2017);
+    const response = await registerCourse('drop', '5831063821', '1111111', '1', 2, 2017);
     response.status.should.equal(400);
   });
   it('can withdraw course that student is studying', async function() {
-    await registerCourse('add', '5831063821', '2110422', '33', 2, 2017);
-    const response = await registerCourse('withdraw', '5831063821', '2110422', '33', 2, 2017);
+    await registerCourse('add', '5831063821', '1111111', '1', 2, 2017);
+    const response = await registerCourse('withdraw', '5831063821', '1111111', '1', 2, 2017);
     response.status.should.equal(200);
     const status = await query(
-      `SELECT status from Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`
+      `SELECT status from Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`
     );
     status[0].status.should.equal('Withdraw');
-    await query(`DELETE FROM Enroll WHERE courseId = '2110422' and sId = '5831063821' and sectionNumber = '33' and year = 2017 and semester = 2;`);
+    await query(`DELETE FROM Enroll WHERE courseId = '1111111' and sId = '5831063821' and sectionNumber = '1' and year = 2017 and semester = 2;`);
   });
   it('cannot withdraw course that student is not studying', async function() {
-    const response = await registerCourse('withdraw', '5831063821', '2110422', '33', 2, 2017);
+    const response = await registerCourse('withdraw', '5831063821', '1111111', '1', 2, 2017);
     response.status.should.equal(400);
   });
   after(async function() {
+    await query(`DELETE FROM Class WHERE  courseId = '1111111' and sectionNumber = '1' and year = 2017 and semester = 2;`);
+    await query(`DELETE FROM Class WHERE  courseId = '1111111' and sectionNumber = '0' and year = 2017 and semester = 2;`);
+    await query(`DELETE FROM Course WHERE courseId = '1111111';`);
     closeConnection();
   });
 });
