@@ -1,4 +1,4 @@
-const { connection } = require('../src/constant.js');
+const { connection } = require('../constant.js');
 const sql = require('./sql.js');
 
 const query = sql => {
@@ -10,6 +10,10 @@ const query = sql => {
   });
 };
 
+const closeConnection = () => {
+  connection.end();
+};
+
 const isUserType = async (id, userType) => {
   const type = await query(sql.typeQuery(id));
   if (type[0].UserType === userType) return true;
@@ -19,5 +23,6 @@ const isUserType = async (id, userType) => {
 
 module.exports = {
   query,
+  closeConnection,
   isUserType
 };
