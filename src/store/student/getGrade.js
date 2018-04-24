@@ -24,8 +24,12 @@ const getGrade = async ({ id }) => {
     let sumCredit = 0;
     for (const c in courseInfo) {
       const course = courseInfo[c];
-      sumGrade = sumGrade + course.grade * course.credit;
-      sumCredit = sumCredit + course.credit;
+      if (course.status === 'Finish') {
+        sumGrade = sumGrade + course.grade * course.credit;
+        sumCredit = sumCredit + course.credit;
+      } else if (course.status === 'Withdraw') {
+        course.grade = 'W';
+      }
       courseList.push({
         key: c,
         ...course
@@ -33,13 +37,15 @@ const getGrade = async ({ id }) => {
     }
     sumGradeX = sumGradeX + sumGrade;
     sumCreditX = sumCreditX + sumCredit;
+    gpa = sumCredit === 0 ? 0 : (sumGrade / sumCredit).toFixed(2);
+    gpax = sumCreditX === 0 ? 0 : (sumGradeX / sumCreditX).toFixed(2);
     gradeInfo[semester] = {
       courseList,
       stat: {
         key: s,
-        gpa: (sumGrade / sumCredit).toFixed(2),
+        gpa,
         ca: sumCredit,
-        gpax: (sumGradeX / sumCreditX).toFixed(2),
+        gpax,
         cax: sumCreditX
       }
     };
