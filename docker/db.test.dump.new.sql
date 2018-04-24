@@ -16,6 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `AcademicStatus`
+--
+
+DROP TABLE IF EXISTS `AcademicStatus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AcademicStatus` (
+  `year` year(4) NOT NULL,
+  `semester` int(11) NOT NULL,
+  `registerPeriod` enum('register','add/drop','withdraw','none') NOT NULL,
+  PRIMARY KEY (`year`,`semester`,`registerPeriod`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `AcademicStatus`
+--
+
+LOCK TABLES `AcademicStatus` WRITE;
+/*!40000 ALTER TABLE `AcademicStatus` DISABLE KEYS */;
+INSERT INTO `AcademicStatus` VALUES (2017,2,'none');
+/*!40000 ALTER TABLE `AcademicStatus` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Advise`
 --
 
@@ -310,6 +335,7 @@ CREATE TABLE `Room` (
 
 LOCK TABLES `Room` WRITE;
 /*!40000 ALTER TABLE `Room` DISABLE KEYS */;
+INSERT INTO `Room` VALUES ('305','ENG3','21','3',40),('315','ENG3','21','3',35);
 /*!40000 ALTER TABLE `Room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -350,7 +376,7 @@ CREATE TABLE `Student` (
 
 LOCK TABLES `Student` WRITE;
 /*!40000 ALTER TABLE `Student` DISABLE KEYS */;
-INSERT INTO `Student` VALUES ('5831063821','1619900273993','สมชาย','ศรีสุข',NULL,NULL,NULL,'0634362323','somchai@gmail.com','323','พญาไท','ปทุมวัน','วังใหม่','อุทัยธานี','61140','21'),('student','1590300012563','สมหญิง','บุญมี',NULL,NULL,NULL,'0934563222','somying@hotmail.com','23','สุขขี','ลาดพร้าว','ธารา','กรุงเทพ','10310','22');
+INSERT INTO `Student` VALUES ('5831063821','1619900273993','สมชาย','ศรีสุข',NULL,NULL,NULL,'0634362323','somchai@gmail.com','323','พญาไท','ปทุมวัน','วังใหม่','อุทัยธานี','61140','21'),('student','1590300012563','สมหญิง','บุญมี',NULL,NULL,NULL,'0934563222','somying@hotmail.com','23','สุขขี','ลาดพร้าว','ธารา','กรุงเทพ','10310','22'),('student2',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `Student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -419,13 +445,14 @@ DROP TABLE IF EXISTS `TeachAt`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `TeachAt` (
   `roomId` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
+  `buildingName` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `courseId` char(7) COLLATE utf8_unicode_ci NOT NULL,
   `sectionNumber` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
   `year` year(4) NOT NULL,
   `semester` int(11) NOT NULL,
-  PRIMARY KEY (`roomId`,`courseId`,`sectionNumber`,`year`,`semester`),
+  PRIMARY KEY (`roomId`,`buildingName`,`courseId`,`sectionNumber`,`year`,`semester`),
   KEY `teachat_ibfk_2` (`courseId`,`sectionNumber`,`year`,`semester`),
-  CONSTRAINT `teachat_ibfk_1` FOREIGN KEY (`roomId`) REFERENCES `Room` (`roomId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `teachat_ibfk_1` FOREIGN KEY (`roomId`, `buildingName`) REFERENCES `Room` (`roomId`, `buildingName`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `teachat_ibfk_2` FOREIGN KEY (`courseId`, `sectionNumber`, `year`, `semester`) REFERENCES `Class` (`courseId`, `sectionNumber`, `year`, `semester`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -500,7 +527,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES ('5831060921','1111111','Student'),('5831063821','12345678','Student'),('officer','officer','Officer'),('student','student','Student'),('teacher','teacher','Teacher'),('teacher2','teacher','Teacher');
+INSERT INTO `User` VALUES ('5831060921','1111111','Student'),('5831063821','12345678','Student'),('officer','officer','Officer'),('student','student','Student'),('student2','student','Student'),('teacher','teacher','Teacher'),('teacher2','teacher','Teacher');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -513,4 +540,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-24 23:51:14
+-- Dump completed on 2018-04-25  2:40:41
