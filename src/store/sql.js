@@ -74,5 +74,8 @@ module.exports = {
   checkRegisterResult: (sid, semester, year) => 
     `SELECT courseId, courseName, shortName, sectionNumber, credit 
       FROM Enroll NATURAL JOIN Course 
-      WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND ( status = 'Studying' OR status = 'Denied')`
+      WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND ( status = 'Studying' OR status = 'Denied')`,
+  
+  checkPaymentStatusQuery: (sid) =>
+    `SELECT * FROM StudentPayment WHERE sId = ${id}`
 };
