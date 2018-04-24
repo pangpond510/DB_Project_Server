@@ -17,7 +17,7 @@ const login = async (username, password) => {
 };
 
 describe('login feature', function() {
-  it('login with existing student username and valid password', async function() {
+  it('can login with existing student username and valid password', async function() {
     const response = await login('student', 'student');
     const json = await response.json();
     response.status.should.equal(200);
@@ -26,11 +26,11 @@ describe('login feature', function() {
     json.should.have.own.property('lastName');
     json.userType.should.equal('Student');
   });
-  it('login with existing username and invalid password', async function() {
+  it('cannot login with existing username and invalid password', async function() {
     const response = await login('student', '12345');
     response.status.should.equal(401);
   });
-  it('login with non existing username', async function() {
+  it('cannot login with non existing username', async function() {
     const response = await login('pond', '1234');
     response.status.should.equal(401);
   });
