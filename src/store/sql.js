@@ -92,5 +92,18 @@ module.exports = {
   setAcademicStatus: (oldYear, oldSemester, oldStatus, newYear, newSemester, newStatus) => 
     `UPDATE AcademicStatus
       SET year = ${newYear}, semester = ${newSemester}, registerPeriod = '${newStatus}' 
-      WHERE year = ${oldYear} AND semester = ${oldSemester} AND registerPeriod = '${oldStatus}';`
+      WHERE year = ${oldYear} AND semester = ${oldSemester} AND registerPeriod = '${oldStatus}';`,
+  
+  checkPendingRegistrationClass: (year, semester) => 
+    `SELECT DISTINCT courseId, sectionNumber 
+      FROM Enroll 
+      WHERE status = 'Pending' AND year = ${year} AND semester = ${semester};`,
+
+  checkStudentRegisterationCourseList: (courseId, section, year, semester) => 
+    `SELECT sId FROM Enroll 
+      WHERE courseId = '${courseId}' AND sectionNumber = '${section}' AND year = ${year} AND semester = ${semester} AND status = 'Pending';`,
+  
+  checkClassDetail: (courseId, section, year, semester) => 
+    `SELECT * FROM Class
+      WHERE courseId = '${courseId}' AND sectionNumber = '${section}' AND year = ${year} AND semester = ${semester};`
 };

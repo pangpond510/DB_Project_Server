@@ -18,4 +18,7 @@ router.get('/student/:id/paymentStatus', require('./store/student/getPaymentStat
 //teacher api
 router.get('/teacher/:id/adviseeGrade', require('./store/teacher/getAdviseeGrade'));
 
+//officer api
+router.post('/officer/manageRegisterPeriod', require('./store/officer/manageRegisterPeriod.js'));
+
 module.exports = router;
