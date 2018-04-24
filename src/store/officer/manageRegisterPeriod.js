@@ -1,6 +1,22 @@
 const { query } = require('../utils.js');
 const sql = require('../sql.js');
 
+const shuffle = array => {
+  let currentIndex = array.length;
+  let temporaryValue;
+  let randomIndex;
+
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+};
+
 const manageRegisterPeriodApi = (req, res) => {
   manageRegisterPeriod(req.body).then(result => {
     res.sendStatus(result.status);
@@ -57,22 +73,40 @@ const closeRegisterPeroid = async () => {
 const conductRegistrationResult = async (year, semester) => {
   const classList = await query(sql.checkPendingRegistrationClass(year, semester));
 
-  classList.forEach(async (c, i) => {
+  classList.forEach(async (c, index) => {
     const studentList = await query(sql.checkStudentRegisterationCourseList(c.courseId, c.sectionNumber, year, semester));
     const result = await query(sql.checkClassDetail(c.courseId, c.sectionNumber, year, semester));
     const maxEnrollment = result[0].maxEnrollment;
 
-    let acceptRegistrationQuery = `UPDATE Enroll SET status = 'Studying' WHERE (`;
-    for (let i = 0; i < studentList.length; i++) {
-      const s = studentList[i];
-      if (i + 1 === studentList.length) acceptRegistrationQuery = acceptRegistrationQuery + ` sId = '${s.sId}' `;
-      else acceptRegistrationQuery = acceptRegistrationQuery + ` sId = '${s.sId}' OR `;
-    }
-    acceptRegistrationQuery =
-      acceptRegistrationQuery +
-      `) AND courseId = '${c.courseId}' AND sectionNumber = '${c.sectionNumber}' AND year = ${year} AND semester = ${semester};`;
+    let luckyStudentList = Array.apply(null, { length: studentList.length }).map(Number.call, Number);
+    luckyStudentList = shuffle(luckyStudentList);
 
-    await query(acceptRegistrationQuery);
+    const luckyStudentNumber = studentList.length < maxEnrollment ? studentList.length : maxEnrollment;
+
+    let acceptQuery = `UPDATE Enroll SET status = 'Studying' WHERE (`;
+    let i = 0;
+    while (i < luckyStudentNumber) {
+      const s = studentList[luckyStudentList[i]];
+      if (i + 1 === luckyStudentNumber) acceptQuery = acceptQuery + ` sId = '${s.sId}' `;
+      else acceptQuery = acceptQuery + ` sId = '${s.sId}' OR `;
+      i++;
+    }
+    acceptQuery =
+      acceptQuery + `) AND courseId = '${c.courseId}' AND sectionNumber = '${c.sectionNumber}' AND year = ${year} AND semester = ${semester};`;
+
+    query(acceptQuery);
+
+    let denyQuery = `UPDATE Enroll SET status = 'Denied' WHERE (`;
+    while (i < studentList.length) {
+      const s = studentList[luckyStudentList[i]];
+      if (i + 1 === studentList.length) denyQuery = denyQuery + ` sId = '${s.sId}' `;
+      else denyQuery = denyQuery + ` sId = '${s.sId}' OR `;
+      i++;
+    }
+    denyQuery =
+      denyQuery + `) AND courseId = '${c.courseId}' AND sectionNumber = '${c.sectionNumber}' AND year = ${year} AND semester = ${semester};`;
+
+    query(denyQuery);
   });
 };
 

@@ -1,5 +1,19 @@
 const fetch = require('node-fetch');
 
+const main0 = async () => {
+  const response = await fetch('http://localhost:7555/officer/manageRegisterPeriod', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      option: 'open'
+    })
+  });
+  console.log(response.status);
+};
+
 const main1 = async () => {
   const response = await fetch('http://localhost:7555/student/registerCourse', {
     method: 'POST',
@@ -54,20 +68,10 @@ const main2 = async () => {
   }
 };
 
-const main3 = async () => {
-  const response = await fetch('http://localhost:7555/officer/manageRegisterPeriod', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      option: 'close'
-    })
-  });
-  console.log(response.status);
+const main = async () => {
+  await main0();
+  await main1();
+  await main2();
 };
 
-//main1();
-//main2();
-main3();
+main();
