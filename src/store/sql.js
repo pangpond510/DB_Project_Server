@@ -19,7 +19,7 @@ module.exports = {
 
   courseQuery: (id,year,semester) => 
     `SELECT * FROM Enroll NATURAL JOIN Course 
-      WHERE sId = '${id}' AND semester = '${semester}' AND year = '${year}';`,
+      WHERE sId = '${id}' AND semester = '${semester}' AND year = '${year}' AND (status = 'Finish' OR status = 'Withdraw');`,
 
   userInfoQuery: (id, userType) => 
     `SELECT * FROM ${userType} NATURAL JOIN Faculty WHERE id = '${id}';`,
