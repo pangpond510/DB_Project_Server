@@ -11,6 +11,7 @@ const getCourseSectionApi = (req, res) => {
 const getCourseSection = async ({ courseId, year, semester }) => {
   process.stdout.write(`Checking detail for course ${courseId} in semester ${year}/${semester} . . . `);
 
+  const courseDetail = await query(sql.courseDetailQuery(courseId));
   const courseList = await query(sql.courseSectionQuery(courseId, year, semester));
   for (let index = 0; index < courseList.length; index++) {
     const course = courseList[index];
@@ -19,7 +20,10 @@ const getCourseSection = async ({ courseId, year, semester }) => {
   }
 
   console.log('DONE!!');
-  return courseList;
+  return {
+    ...courseDetail[0],
+    sectionList: courseList
+  };
 };
 
 module.exports = getCourseSectionApi;

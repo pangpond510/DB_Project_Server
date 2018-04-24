@@ -28,11 +28,18 @@ module.exports = {
     `SELECT DISTINCT courseId, courseName, shortName, credit, semester, year FROM Course NATURAL JOIN Class 
       WHERE semester = ${semester} AND year = ${year} 
       ORDER BY courseId`,
+  
+  courseDetailQuery: (courseId) => 
+    `SELECT * FROM Course WHERE CourseId = '${courseId}'`,
 
   courseSectionQuery: (courseId, year, semester) => 
-    `SELECT * FROM Course NATURAL JOIN Class 
-      WHERE courseId = '${courseId}' AND semester = ${semester} AND year = ${year} 
-      ORDER BY sectionNumber;`,
+    `SELECT Cl.courseId, Cl.sectionNumber, GROUP_CONCAT(DISTINCT T.tId ORDER BY T.tId SEPARATOR ', ') As Teacher , GROUP_CONCAT(DISTINCT CONCAT(Cs.day, ' (',  Cs.startTime, ' - ', DATE_ADD(Cs.startTime, INTERVAL Cs.period HOUR_MINUTE), ')') ORDER BY Cs.day, Cs.startTime SEPARATOR '\n') As Time
+      FROM Class Cl #NATURAL JOIN Teach T NATURAL JOIN ClassSchedule Cs
+      LEFT JOIN Teach T ON Cl.courseId = T.courseId AND Cl.sectionNumber = T.sectionNumber AND Cl.semester = T.semester AND Cl.year = T.year
+      LEFT JOIN ClassSchedule Cs ON Cl.courseId = Cs.courseId AND Cl.sectionNumber = Cs.sectionNumber AND Cl.semester = Cs.semester AND Cl.year = Cs.year
+      WHERE Cl.courseId = '${courseId}' AND Cl.year = ${year} AND Cl.semester = ${semester}
+      GROUP BY Cl.courseId, Cl.sectionNumber, Cl.year, Cl.semester
+      ORDER BY Cl.courseId, Cl.sectionNumber, Cl.year, Cl.semester;`,
 
   adviseeGradeQuery: id => 
     `SELECT S.firstName, S.lastName, E.sId,sum(C.credit) AS sumCredit ,sum(C.credit*E.grade) AS sumGrade 
