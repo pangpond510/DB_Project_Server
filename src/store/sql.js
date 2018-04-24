@@ -77,5 +77,5 @@ module.exports = {
       WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND ( status = 'Studying' OR status = 'Denied')`,
   
   checkPaymentStatusQuery: (sid) =>
-    `SELECT * FROM StudentPayment WHERE sId = ${id}`
+    `SELECT * FROM StudentPayment WHERE sId = '${id}'`
 };
