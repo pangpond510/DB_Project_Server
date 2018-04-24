@@ -84,5 +84,13 @@ module.exports = {
       WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND ( status = 'Studying' OR status = 'Denied')`,
   
   checkPaymentStatusQuery: (sid) =>
-    `SELECT * FROM StudentPayment WHERE sId = '${id}'`
+    `SELECT * FROM StudentPayment WHERE sId = '${id}'`,
+
+  checkAcademicStatus: () => 
+    `SELECT * FROM AcademicStatus;`,
+
+  setAcademicStatus: (oldYear, oldSemester, oldStatus, newYear, newSemester, newStatus) => 
+    `UPDATE AcademicStatus
+      SET year = ${newYear}, semester = ${newSemester}, registerPeriod = '${newStatus}' 
+      WHERE year = ${oldYear} AND semester = ${oldSemester} AND registerPeriod = '${oldStatus}';`
 };

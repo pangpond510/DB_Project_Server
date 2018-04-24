@@ -15,9 +15,12 @@ const addDropCourseApi = (req, res) => {
 const addDropCourse = async ({ id, courseList }) => {
   process.stdout.write(`stduent ${id} tries to add and/or drop courses . . `);
 
-  // check peroid ช่วงลดเพิ่ม
-  year = 2017;
-  semester = 2;
+  const result = await query(sql.checkAcademicStatus());
+  const { year, semester, registerPeriod } = result[0];
+  if (registerPeriod !== 'add/drop') {
+    console.log('register FAIL!!');
+    return { success: false };
+  }
 
   console.log('');
 

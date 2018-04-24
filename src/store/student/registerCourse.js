@@ -15,9 +15,12 @@ const registerCourseApi = (req, res) => {
 const registerCourse = async ({ id, courseList }) => {
   process.stdout.write(`stduent ${id} tries to register courses . . `);
 
-  // check peroid ช่วงลงทะเบียนปกติ
-  year = 2017;
-  semester = 2;
+  const result = await query(sql.checkAcademicStatus());
+  const { year, semester, registerPeriod } = result[0];
+  if (registerPeriod !== 'register') {
+    console.log('register FAIL!!');
+    return { success: false };
+  }
 
   // check already register or not (has pending coure)
   const checkPending = await query(sql.checkPendingCourse(id, semester, year));
