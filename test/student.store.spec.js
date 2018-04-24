@@ -113,33 +113,28 @@ describe('get student informaiton feature', function() {
 });
 
 describe('get available course feature', function() {
-  let response, json;
-  before(async function() {
-    response = await getAvailCourse(2017, 1);
-    json = await response.json();
-  });
   it('first query will provide only courses in specific semester', async function() {
+    const response = await getAvailCourse(2017, 1);
+    const json = await response.json();
     for (const c in json) {
       json[c].semester.should.equal(1);
       json[c].year.should.equal(2017);
     }
-  });
-  before(async function() {
-    response = await getCourseSection('2110313', 2017, 1);
-    json = await response.json();
   });
   it('second query will provide only specific course in specific semester', async function() {
-    for (const c in json) {
-      json[c].courseId.should.equal('2110313');
-      json[c].semester.should.equal(1);
-      json[c].year.should.equal(2017);
-    }
+    const response = await getCourseSection('2110313', 2017, 1);
+    const json = await response.json();
+    json.courseId.should.equal('2110313');
+    json.semester.should.equal('1');
+    json.year.should.equal('2017');
   });
   it('second query will provide all sections detail', async function() {
-    json[0].sectionNumber.should.equal('1');
-    json[1].sectionNumber.should.equal('2');
-    json[2].sectionNumber.should.equal('3');
-    json[3].sectionNumber.should.equal('33');
+    const response = await getCourseSection('2110313', 2017, 1);
+    const json = await response.json();
+    json.sectionList[0].sectionNumber.should.equal('1');
+    json.sectionList[1].sectionNumber.should.equal('2');
+    json.sectionList[2].sectionNumber.should.equal('3');
+    json.sectionList[3].sectionNumber.should.equal('33');
   });
 });
 

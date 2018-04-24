@@ -22,6 +22,8 @@ const getCourseSection = async ({ courseId, year, semester }) => {
   console.log('DONE!!');
   return {
     ...courseDetail[0],
+    semester: semester,
+    year: year,
     sectionList: courseList
   };
 };
