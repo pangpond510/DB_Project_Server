@@ -34,6 +34,8 @@ const registerCourse = async ({ id, courseList }) => {
   let detail = [];
   for (let index = 0; index < courseList.length; index++) {
     const { courseId, section } = courseList[index];
+    const { courseName, credit } = await query(`SELECT * FROM Course WHERE courseId = ${courseId}`);
+    const sectionNumber = section;
 
     process.stdout.write(`   stduent ${id} registers for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
@@ -44,29 +46,33 @@ const registerCourse = async ({ id, courseList }) => {
       success = false;
       detail.push({
         courseId,
-        section,
+        courseName,
+        sectionNumber,
+        credit,
         status: 'Error'
       });
       continue;
     }
 
+    let status = '';
     try {
-      await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Pending'));
-      detail.push({
-        courseId,
-        section,
-        status: 'Pending'
-      });
+      if (success) {
+        await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Pending'));
+        status = 'Pending';
+      }
       console.log('DONE!!');
     } catch (error) {
-      detail.push({
-        courseId,
-        section,
-        status: 'Error'
-      });
+      status = 'Error';
       console.log('FAIL!!');
       success = false;
     }
+    detail.push({
+      courseId,
+      courseName,
+      sectionNumber,
+      credit,
+      status
+    });
   }
 
   if (success) {
