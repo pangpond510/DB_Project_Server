@@ -34,7 +34,8 @@ const registerCourse = async ({ id, courseList }) => {
   let detail = [];
   for (let index = 0; index < courseList.length; index++) {
     const { courseId, section } = courseList[index];
-    const { courseName, credit } = await query(`SELECT * FROM Course WHERE courseId = ${courseId}`);
+    const courseDetail = await query(`SELECT * FROM Course WHERE courseId = '${courseId}'`);
+    const { courseName, credit } = courseDetail[0];
     const sectionNumber = section;
 
     process.stdout.write(`   stduent ${id} registers for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
