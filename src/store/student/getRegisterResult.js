@@ -1,5 +1,4 @@
 const { query } = require('../utils.js');
-const sql = require('../sql.js');
 
 const getRegisterResultApi = (req, res) => {
   getRegisterResult({
@@ -11,14 +10,26 @@ const getRegisterResultApi = (req, res) => {
 };
 
 const getRegisterResult = async ({ id }) => {
-  console.log(`check register result of student ${id}`);
+  console.log(`check register result of student ${id} . . . `);
 
-  // get semester and year
-  semester = 2;
-  year = 2017;
+  const result = await query(checkAcademicStatusQuery());
+  const { year, semester, registerPeriod } = result[0];
 
-  const courseList = query(sql.checkRegisterResult(id, semester, year));
+  const courseList = query(checkRegisterResultQuery(id, semester, year));
+  courseList = courseList.map((course, i) => ({ ...course, key: i }));
+
+  console.log('DONE!!');
   return courseList;
 };
+
+// prettier-ignore
+const checkAcademicStatusQuery = () => 
+    `SELECT * FROM AcademicStatus;`;
+
+// prettier-ignore
+const checkRegisterResultQuery = (sid, semester, year) =>
+    `SELECT courseId, courseName, shortName, sectionNumber, credit, status
+      FROM Enroll NATURAL JOIN Course 
+      WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND ( status = 'Studying' OR status = 'Denied')`;
 
 module.exports = getRegisterResultApi;

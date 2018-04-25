@@ -11,10 +11,8 @@ const getPaymentStatusApi = (req, res) => {
 const getPaymentStatus = async ({ id }) => {
   process.stdout.write(`Checking payment status of student ${id} . . . `);
 
-  const result = await query(sql.checkPaymentStatusQuery(id));
-
-  console.log('DONE!!');
-  return result;
+  //console.log('DONE!!');
+  return {};
 };
 
 module.exports = getPaymentStatusApi;

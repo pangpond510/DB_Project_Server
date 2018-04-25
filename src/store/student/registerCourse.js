@@ -1,5 +1,4 @@
 const { query } = require('../utils.js');
-const sql = require('../sql.js');
 
 const registerCourseApi = (req, res) => {
   registerCourse(req.body).then(result => {
@@ -15,7 +14,7 @@ const registerCourseApi = (req, res) => {
 const registerCourse = async ({ id, courseList }) => {
   process.stdout.write(`stduent ${id} tries to register courses . . `);
 
-  const result = await query(sql.checkAcademicStatus());
+  const result = await query(checkAcademicStatusQuery());
   const { year, semester, registerPeriod } = result[0];
   if (registerPeriod !== 'register') {
     console.log('register FAIL!!');
@@ -23,7 +22,7 @@ const registerCourse = async ({ id, courseList }) => {
   }
 
   // check already register or not (has pending coure)
-  const checkPending = await query(sql.checkPendingCourse(id, semester, year));
+  const checkPending = await query(checkPendingCourseQuery(id, semester, year));
   if (checkPending.length > 0) {
     console.log('register FAIL!!');
     return { success: false };
@@ -32,76 +31,86 @@ const registerCourse = async ({ id, courseList }) => {
 
   let success = true;
   let detail = [];
-  for (let index = 0; index < courseList.length; index++) {
-    const { courseId, section } = courseList[index];
-    const courseDetail = await query(`SELECT * FROM Course WHERE courseId = '${courseId}'`);
+  for (let i = 0; i < courseList.length; i++) {
+    const { courseId, section } = courseList[i];
+    const courseDetail = await query(courseDetailQuery(courseId));
     const { courseName, credit } = courseDetail[0];
     const sectionNumber = section;
 
     process.stdout.write(`   stduent ${id} registers for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
     //check not studying or pass this course
-    const registerStatus = await query(sql.checkCourseCanRegister(id, courseId));
+    let status = '';
+    const registerStatus = await query(canRegisterQuery(id, courseId));
     if (registerStatus.length > 0) {
+      status = 'Error';
       console.log('FAIL!!');
-      success = false;
-      detail.push({
-        courseId,
-        courseName,
-        sectionNumber,
-        credit,
-        status: 'Error'
-      });
-      continue;
     }
 
-    let status = '';
     try {
-      if (success) {
-        await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Pending'));
+      if (success && status !== 'Error') {
+        await query(registerCourseQuery(id, courseId, section, semester, year));
         status = 'Pending';
       }
       console.log('DONE!!');
     } catch (error) {
       status = 'Error';
-      console.log('FAIL!!');
       success = false;
+      console.log('FAIL!!');
     }
-    detail.push({
-      courseId,
-      courseName,
-      sectionNumber,
-      credit,
-      status
-    });
+
+    detail.push({ courseId, courseName, sectionNumber, credit, status, key: i });
   }
 
   if (success) {
     console.log('register DONE!!');
     return {
       success: true,
-      result: {
-        success: true,
-        detail
-      }
+      result: { success, detail }
     };
   } else {
-    for (let index = 0; index < detail.length; index++) {
-      const { courseId, section, status } = detail[index];
+    for (let i = 0; i < detail.length; i++) {
+      const { courseId, section, status } = detail[i];
       if (status === 'Pending') {
-        await query(sql.undoRegister(id, courseId, section, semester, year));
-        detail[index].status = '';
+        await query(undoRegisterQuery(id, courseId, section, semester, year));
+        detail[i].status = '';
       }
     }
     console.log('register FAIL!!');
     return {
       success: true,
-      result: {
-        success: false,
-        detail
-      }
+      result: { success, detail }
     };
   }
 };
+
+// prettier-ignore
+const checkAcademicStatusQuery = () => 
+    `SELECT * FROM AcademicStatus;`;
+
+// prettier-ignore
+const checkPendingCourseQuery = (sid, semester, year) => 
+    `SELECT courseId, sectionNumber
+      FROM Enroll
+      WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND status = 'Pending';`;
+
+// prettier-ignore
+const courseDetailQuery = (courseId) => 
+    `SELECT * FROM Course WHERE courseId = '${courseId}';`;
+
+// prettier-ignore
+const canRegisterQuery = (sid, courseId) =>
+    `SELECT * from Enroll
+      WHERE sId = '${sid}' AND courseId = '${courseId}' AND (status = 'Finish' OR status = 'Pending' OR status = 'Studying');`;
+
+// prettier-ignore
+const registerCourseQuery = (sid, courseId, section, semester, year) =>
+    `INSERT INTO Enroll (sId, courseId, sectionNumber, year, semester, status, enrollDate) 
+      VALUES ('${sid}', '${courseId}', '${section}', ${year}, ${semester}, 'Pending', CURDATE());`;
+
+// prettier-ignore
+const undoRegisterQuery = (id, courseId, section, semester, year) =>
+    `DELETE FROM Enroll 
+      WHERE courseId = '${courseId}' and sId = '${id}' and sectionNumber = '${section}' and year = ${year} and semester = ${semester} and status = 'Pending';`;
 
 module.exports = registerCourseApi;

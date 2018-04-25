@@ -13,7 +13,6 @@ router.post('/student/registerCourse', require('./store/student/registerCourse.j
 router.post('/student/addDropCourse', require('./store/student/addDropCourse.js'));
 router.get('/student/:id/getCoursePendingList', require('./store/student/getCoursePendingList.js'));
 router.get('/student/:id/getRegisterResult', require('./store/student/getRegisterResult.js'));
-router.get('/student/:id/paymentStatus', require('./store/student/getPaymentStatus.js'));
 
 //teacher api
 router.get('/teacher/:id/adviseeGrade', require('./store/teacher/getAdviseeGrade'));

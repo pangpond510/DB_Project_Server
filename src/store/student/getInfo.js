@@ -1,5 +1,4 @@
 const { query } = require('../utils.js');
-const sql = require('../sql.js');
 
 const getInfoApi = (req, res) => {
   getInfo(req.params).then(result => {
@@ -11,7 +10,7 @@ const getInfoApi = (req, res) => {
 const getInfo = async ({ id }) => {
   process.stdout.write(`Checking information of student ${id} . . . `);
 
-  const userInfo = await query(sql.userInfoQuery(id, 'Student'));
+  const userInfo = await query(infoQuery(id));
 
   console.log('DONE!!');
   return {
@@ -19,6 +18,8 @@ const getInfo = async ({ id }) => {
     ssn: userInfo[0].ssn,
     firstName: userInfo[0].firstName,
     lastName: userInfo[0].lastName,
+    sex: userInfo[0].sex,
+    status: userInfo[0].status,
     tel: userInfo[0].tel,
     email: userInfo[0].email,
     address: {
@@ -32,5 +33,9 @@ const getInfo = async ({ id }) => {
     faculty: userInfo[0].facultyName
   };
 };
+
+// prettier-ignore
+const infoQuery = (id) => 
+    `SELECT * FROM Student NATURAL JOIN Faculty WHERE id = '${id}';`;
 
 module.exports = getInfoApi;

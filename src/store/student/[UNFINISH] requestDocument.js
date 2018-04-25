@@ -14,6 +14,9 @@ const requestDocumentApi = (req, res) => {
 
 const requestDocument = async ({ id, docId }) => {
   process.stdout.write(`stduent ${id} request for document ${docId} . . . `);
+
+  //console.log('DONE!!');
+  return {};
 };
 
 module.exports = requestDocumentApi;
