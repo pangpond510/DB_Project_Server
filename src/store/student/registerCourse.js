@@ -40,8 +40,8 @@ const registerCourse = async ({ id, courseList }) => {
     process.stdout.write(`   stduent ${id} registers for course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
     //check not studying or pass this course
-    const status = await query(sql.checkCourseCanRegister(id, courseId));
-    if (status.length > 0) {
+    const registerStatus = await query(sql.checkCourseCanRegister(id, courseId));
+    if (registerStatus.length > 0) {
       console.log('FAIL!!');
       success = false;
       detail.push({
