@@ -32,11 +32,11 @@ const manageRegisterPeriod = async ({ option }) => {
 
 const openRegisterPeroid = async () => {
   const result = await query(checkAcademicStatusQuery());
-  const { year, semester, registerPeriod } = result[0];
+  const { year, semester, registrationStatus } = result[0];
 
-  if (registerPeriod === 'none') {
+  if (registrationStatus === 'none') {
     try {
-      await query(setAcademicStatusQuery(year, semester, registerPeriod, year, semester, 'register'));
+      await query(setAcademicStatusQuery(year, semester, 'register'));
 
       console.log('DONE!!');
       return { status: 200 };
@@ -52,11 +52,11 @@ const openRegisterPeroid = async () => {
 
 const closeRegisterPeroid = async () => {
   const result = await query(checkAcademicStatusQuery());
-  const { year, semester, registerPeriod } = result[0];
+  const { year, semester, registrationStatus } = result[0];
 
-  if (registerPeriod === 'register') {
+  if (registrationStatus === 'register') {
     try {
-      await query(setAcademicStatusQuery(year, semester, registerPeriod, year, semester, 'none'));
+      await query(setAcademicStatusQuery(year, semester, 'none'));
       conductRegistrationResult(year, semester);
 
       console.log('DONE!!');
@@ -84,7 +84,7 @@ const conductRegistrationResult = async (year, semester) => {
 
     const luckyStudentNumber = studentList.length < maxEnrollment ? studentList.length : maxEnrollment;
 
-    let acceptQuery = `UPDATE Enroll SET status = 'Studying' WHERE (`;
+    let acceptQuery = `UPDATE Enrollment SET status = 'Studying' WHERE (`;
     let i = 0;
     while (i < luckyStudentNumber) {
       const s = studentList[luckyStudentList[i]];
@@ -96,7 +96,7 @@ const conductRegistrationResult = async (year, semester) => {
 
     query(acceptQuery);
 
-    let denyQuery = `UPDATE Enroll SET status = 'Denied' WHERE (`;
+    let denyQuery = `UPDATE Enrollment SET status = 'Denied' WHERE (`;
     while (i < studentList.length) {
       const s = studentList[luckyStudentList[i]];
       if (i + 1 === studentList.length) denyQuery += ` sId = '${s.sId}' `;
@@ -111,23 +111,23 @@ const conductRegistrationResult = async (year, semester) => {
 
 // prettier-ignore
 const checkAcademicStatusQuery = () => 
-    `SELECT * FROM AcademicStatus;`;
+    `SELECT * FROM AcademicPeriod WHERE status ='now' ;`;
 
 // prettier-ignore
-const setAcademicStatusQuery = (oldYear, oldSemester, oldStatus, newYear, newSemester, newStatus) =>
-    `UPDATE AcademicStatus
-      SET year = ${newYear}, semester = ${newSemester}, registerPeriod = '${newStatus}' 
-      WHERE year = ${oldYear} AND semester = ${oldSemester} AND registerPeriod = '${oldStatus}';`;
+const setAcademicStatusQuery = (oldYear, oldSemester, newStatus) =>
+    `UPDATE AcademicPeriod
+      SET registrationStatus = '${newStatus}' 
+      WHERE year = ${oldYear} AND semester = ${oldSemester};`;
 
 // prettier-ignore
 const checkPendingClassQuery = (year, semester) =>
     `SELECT DISTINCT courseId, sectionNumber 
-      FROM Enroll 
+      FROM Enrollment 
       WHERE status = 'Pending' AND year = ${year} AND semester = ${semester};`;
 
 // prettier-ignore
 const checkStudentRegisterQuery = (courseId, section, year, semester) =>
-    `SELECT sId FROM Enroll 
+    `SELECT sId FROM Enrollment 
       WHERE courseId = '${courseId}' AND sectionNumber = '${section}' AND year = ${year} AND semester = ${semester} AND status = 'Pending';`;
 
 // prettier-ignore

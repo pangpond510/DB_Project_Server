@@ -70,8 +70,8 @@ const main2 = async () => {
 
 const main = async () => {
   await main0();
-  await main1();
-  await main2();
+  //await main1();
+  //await main2();
 };
 
 main();

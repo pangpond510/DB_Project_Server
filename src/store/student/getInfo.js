@@ -12,6 +12,11 @@ const getInfo = async ({ id }) => {
 
   const userInfo = await query(infoQuery(id));
 
+  if (userInfo.length === 0) {
+    console.log('FAIL!!');
+    return {};
+  }
+
   console.log('DONE!!');
   return {
     id: userInfo[0].id,

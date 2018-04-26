@@ -15,8 +15,8 @@ const addDropCourse = async ({ id, courseList }) => {
   process.stdout.write(`stduent ${id} tries to add and/or drop courses . . `);
 
   const result = await query(checkAcademicStatusQuery());
-  const { year, semester, registerPeriod } = result[0];
-  if (registerPeriod !== 'add/drop') {
+  const { year, semester, registrationStatus } = result[0];
+  if (registrationStatus !== 'add/drop') {
     console.log('register FAIL!!');
     return { success: false };
   }
@@ -93,11 +93,11 @@ const dropCourse = async (id, courseId, courseName, section, semester, year, cre
 
 // prettier-ignore
 const checkAcademicStatusQuery = () => 
-    `SELECT * FROM AcademicStatus;`;
+    `SELECT * FROM AcademicPeriod WHERE status ='now' ;`;
 
 // prettier-ignore
 const canRegisterQuery = (sid, courseId) =>
-    `SELECT * from Enroll
+    `SELECT * from Enrollment
       WHERE sId = '${sid}' AND courseId = '${courseId}' AND (status = 'Finish' OR status = 'Pending' OR status = 'Studying');`;
 
 // prettier-ignore
@@ -107,23 +107,23 @@ const courseDetailQuery = () =>
 // prettier-ignore
 const checkEnrollCountQuery = (courseId, section, semester, year) =>
     `SELECT courseId, sectionNumber, year, semester, count(sId) AS count, maxEnrollment
-      FROM Enroll NATURAL JOIN Class
+      FROM Enrollment NATURAL JOIN Class
       WHERE courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester} AND status='Studying'
       GROUP BY courseId, sectionNumber, year, semester;`;
 
 // prettier-ignore
 const addCourseQuery = (sid, courseId, section, semester, year) =>
-    `INSERT INTO Enroll (sId, courseId, sectionNumber, year, semester, status, enrollDate) 
+    `INSERT INTO Enrollment (sId, courseId, sectionNumber, year, semester, status, enrollDate) 
       VALUES ('${sid}', '${courseId}', '${section}', ${year}, ${semester}, 'Studying', CURDATE());`;
 
 // prettier-ignore
 const checkCourseStatus = (sid, courseId, section, semester, year) =>
-    `SELECT status from Enroll
+    `SELECT status from Enrollment
       WHERE sId = '${sid}' AND courseId = '${courseId}' AND sectionNumber = '${section}' AND year = ${year} AND semester = ${semester};`;
 
 // prettier-ignore
 const dropCourseQuery = (sid, courseId, section, semester, year) =>
-    `UPDATE Enroll
+    `UPDATE Enrollment
       SET status = 'Drop'
       WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester};`;
 

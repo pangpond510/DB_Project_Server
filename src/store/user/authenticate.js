@@ -18,7 +18,7 @@ const authenticate = async ({ username, password }) => {
   }
 
   const userInfo = await query(userBasicInfoQuery(username, results[0].userType));
-  const academicStatus = await query(getAcademicStatusQuery());
+  const academicStatus = await query(checkAcademicStatusQuery());
 
   console.log('DONE!!');
   return {
@@ -39,7 +39,7 @@ const userBasicInfoQuery = (id, userType) =>
     `SELECT id, firstName, lastName, userType FROM ${userType} NATURAL JOIN User WHERE id = '${id}';`;
 
 // prettier-ignore
-const getAcademicStatusQuery = () => 
-    `SELECT * FROM AcademicStatus;`;
+const checkAcademicStatusQuery = () => 
+    `SELECT year, semester, registrationStatus FROM AcademicPeriod WHERE status ='now' ;`;
 
 module.exports = authenticateApi;

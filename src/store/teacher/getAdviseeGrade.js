@@ -33,7 +33,7 @@ const getAdviseeGrade = async ({ id }) => {
 // prettier-ignore
 const adviseeGradeQuery = id => 
     `SELECT S.firstName, S.lastName, E.sId, sum(C.credit*E.grade) AS sumGrade, sum(C.credit) AS sumCredit
-      FROM ((Enroll E NATURAL JOIN Course C) INNER JOIN Student S ON E.sId = S.id) INNER JOIN Advise A ON E.sId = A.sId
-      WHERE A.tid = 'teacher' GROUP BY E.sId ORDER BY E.sId;`;
+      FROM ((Enrollment E NATURAL JOIN Course C) INNER JOIN Student S ON E.sId = S.id) INNER JOIN Advise A ON E.sId = A.sId
+      WHERE A.tid = '${id}' GROUP BY E.sId ORDER BY E.sId;`;
 
 module.exports = getAdviseeGradeApi;

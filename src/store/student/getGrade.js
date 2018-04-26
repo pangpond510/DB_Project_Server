@@ -70,11 +70,11 @@ const getGrade = async ({ id }) => {
 // prettier-ignore
 const yearSemesterQuery = (id) => 
     `SELECT DISTINCT year, semester 
-      FROM Enroll WHERE sId = '${id}' ORDER BY year, semester;`;
+      FROM Enrollment WHERE sId = '${id}' ORDER BY year, semester;`;
 
 // prettier-ignore
 const courseQuery = (id, year, semester) =>
-    `SELECT courseId, courseName, shortName, credit, grade, status FROM Enroll NATURAL JOIN Course 
+    `SELECT courseId, courseName, shortName, credit, grade, status FROM Enrollment NATURAL JOIN Course 
       WHERE sId = '${id}' AND semester = '${semester}' AND year = '${year}' AND (status = 'Finish' OR status = 'Withdraw');`;
 
 module.exports = getGradeApi;

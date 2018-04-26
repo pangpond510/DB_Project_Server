@@ -15,8 +15,8 @@ const registerCourse = async ({ id, courseList }) => {
   process.stdout.write(`stduent ${id} tries to register courses . . `);
 
   const result = await query(checkAcademicStatusQuery());
-  const { year, semester, registerPeriod } = result[0];
-  if (registerPeriod !== 'register') {
+  const { year, semester, registrationStatus } = result[0];
+  if (registrationStatus !== 'register') {
     console.log('register FAIL!!');
     return { success: false };
   }
@@ -86,12 +86,12 @@ const registerCourse = async ({ id, courseList }) => {
 
 // prettier-ignore
 const checkAcademicStatusQuery = () => 
-    `SELECT * FROM AcademicStatus;`;
+    `SELECT * FROM AcademicPeriod WHERE status ='now' ;`;
 
 // prettier-ignore
 const checkPendingCourseQuery = (sid, semester, year) => 
     `SELECT courseId, sectionNumber
-      FROM Enroll
+      FROM Enrollment
       WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND status = 'Pending';`;
 
 // prettier-ignore
@@ -100,17 +100,17 @@ const courseDetailQuery = (courseId) =>
 
 // prettier-ignore
 const canRegisterQuery = (sid, courseId) =>
-    `SELECT * from Enroll
+    `SELECT * from Enrollment
       WHERE sId = '${sid}' AND courseId = '${courseId}' AND (status = 'Finish' OR status = 'Pending' OR status = 'Studying');`;
 
 // prettier-ignore
 const registerCourseQuery = (sid, courseId, section, semester, year) =>
-    `INSERT INTO Enroll (sId, courseId, sectionNumber, year, semester, status, enrollDate) 
+    `INSERT INTO Enrollment (sId, courseId, sectionNumber, year, semester, status, enrollDate) 
       VALUES ('${sid}', '${courseId}', '${section}', ${year}, ${semester}, 'Pending', CURDATE());`;
 
 // prettier-ignore
 const undoRegisterQuery = (id, courseId, section, semester, year) =>
-    `DELETE FROM Enroll 
+    `DELETE FROM Enrollment 
       WHERE courseId = '${courseId}' and sId = '${id}' and sectionNumber = '${section}' and year = ${year} and semester = ${semester} and status = 'Pending';`;
 
 module.exports = registerCourseApi;

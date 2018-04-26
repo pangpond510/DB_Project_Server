@@ -13,9 +13,9 @@ const getCoursePendingList = async ({ id }) => {
   process.stdout.write(`get course pending list of student ${id} . . . `);
 
   const result = await query(checkAcademicStatusQuery());
-  const { year, semester, registerPeriod } = result[0];
+  const { year, semester, registrationStatus } = result[0];
 
-  const courseList = query(checkPendingCourseQuery(id, semester, year));
+  let courseList = query(checkPendingCourseQuery(id, semester, year));
   courseList = courseList.map((course, i) => ({ ...course, key: i }));
 
   console.log('DONE!!');
@@ -24,12 +24,12 @@ const getCoursePendingList = async ({ id }) => {
 
 // prettier-ignore
 const checkAcademicStatusQuery = () => 
-    `SELECT * FROM AcademicStatus;`;
+    `SELECT * FROM AcademicPeriod WHERE status ='now' ;`;
 
 // prettier-ignore
 const checkPendingCourseQuery = (sid, semester, year) =>
     `SELECT courseId, courseName, shortName, sectionNumber, credit 
-      FROM Enroll NATURAL JOIN Course 
+      FROM Enrollment NATURAL JOIN Course 
       WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND status = 'Pending'`;
 
 module.exports = getCoursePendingListApi;
