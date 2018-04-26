@@ -27,17 +27,17 @@ const requestDocument = async ({ id, docId }) => {
     };
   } catch (error) {
     console.log('FAIL!!');
-    return 400;
+    return { success: false };
   }
 };
 
 // prettier-ignore
 const requestDocumentQuery = (id, docId) => 
     `INSERT INTO Request (sId, documentId, status, requestDate) 
-      VALUES ('${id}','${docId}', 'Pending', CURDATE())`;
+      VALUES ('${id}','${docId}', 'Pending', CURDATE());`;
 
 // prettier-ignore
 const getStudentRequestQuery = (id) =>
-    `SELECT * FROM Request WHERE sId = '${id}'`;
+    `SELECT * FROM Request WHERE sId = '${id}';`;
 
 module.exports = requestDocumentApi;

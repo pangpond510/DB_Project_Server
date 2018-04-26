@@ -72,6 +72,7 @@ const main = async () => {
   //await main0();
   //await main1();
   //await main2();
+  /*
   const response = await fetch('http://localhost:7555/student/requestDocument', {
     method: 'POST',
     headers: {
@@ -81,6 +82,22 @@ const main = async () => {
     body: JSON.stringify({
       id: '5830000121',
       docId: 'CR23'
+    })
+  });
+  if (response.status === 200) {
+    const json = await response.json();
+    console.log(json);
+  }
+  */
+  const response = await fetch('http://localhost:7555/officer/submitRequest', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      barcode: 13,
+      status: 'Processing'
     })
   });
   if (response.status === 200) {

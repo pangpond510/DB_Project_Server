@@ -17,9 +17,11 @@ router.get('/student/:id/getDocumentList', require('./store/student/getDocumentL
 router.post('/student/requestDocument', require('./store/student/requestDocument.js'));
 
 //teacher api
-router.get('/teacher/:id/adviseeGrade', require('./store/teacher/getAdviseeGrade'));
+router.get('/teacher/:id/adviseeGrade', require('./store/teacher/getAdviseeGrade.js'));
 
 //officer api
 router.post('/officer/manageRegisterPeriod', require('./store/officer/manageRegisterPeriod.js'));
+router.get('/officer/getRequestList', require('./store/officer/getRequestList.js'));
+router.post('/officer/submitRequest', require('./store/officer/submitRequest.js'));
 
 module.exports = router;

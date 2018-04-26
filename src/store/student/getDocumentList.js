@@ -25,10 +25,10 @@ const getDocumentList = async id => {
 
 // prettier-ignore
 const availCourseQuery = (year, semester) => 
-    `SELECT * FROM Document`;
+    `SELECT * FROM Document;`;
 
 // prettier-ignore
 const getStudentRequestQuery = (id) =>
-    `SELECT * FROM Request WHERE sId = '${id}'`;
+    `SELECT * FROM Request WHERE sId = '${id};'`;
 
 module.exports = getDocumentListApi;
