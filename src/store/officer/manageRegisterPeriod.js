@@ -26,18 +26,19 @@ const manageRegisterPeriodApi = (req, res) => {
 const manageRegisterPeriod = async ({ option }) => {
   process.stdout.write(`${option} register period . . . `);
 
-  if (option === 'open') return await openRegisterPeroid();
-  else if (option === 'close') return await closeRegisterPeroid();
-};
-
-const openRegisterPeroid = async () => {
   const result = await query(checkAcademicStatusQuery());
   const { year, semester, registrationStatus } = result[0];
 
+  if (option === 'register') return await toRegisterPeriod(year, semester, registrationStatus);
+  else if (option === 'add/drop') return await toAddDropPeriod(year, semester, registrationStatus);
+  else if (option === 'withdraw') return await toWithdrawrPeriod(year, semester, registrationStatus);
+  else if (option === 'none') return await toNonePeriod(year, semester, registrationStatus);
+};
+
+const toRegisterPeriod = async (year, semester, registrationStatus) => {
   if (registrationStatus === 'none') {
     try {
       await query(setAcademicStatusQuery(year, semester, 'register'));
-
       console.log('DONE!!');
       return { status: 200 };
     } catch (error) {
@@ -50,15 +51,10 @@ const openRegisterPeroid = async () => {
   }
 };
 
-const closeRegisterPeroid = async () => {
-  const result = await query(checkAcademicStatusQuery());
-  const { year, semester, registrationStatus } = result[0];
-
-  if (registrationStatus === 'register') {
+const toAddDropPeriod = async (year, semester, registrationStatus) => {
+  if (registrationStatus === 'none') {
     try {
-      await query(setAcademicStatusQuery(year, semester, 'none'));
-      conductRegistrationResult(year, semester);
-
+      await query(setAcademicStatusQuery(year, semester, 'add/drop'));
       console.log('DONE!!');
       return { status: 200 };
     } catch (error) {
@@ -66,6 +62,34 @@ const closeRegisterPeroid = async () => {
       return { status: 400 };
     }
   } else {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+};
+
+const toWithdrawPeriod = async (year, semester, registrationStatus) => {
+  if (registrationStatus === 'none') {
+    try {
+      await query(setAcademicStatusQuery(year, semester, 'withdraw'));
+      console.log('DONE!!');
+      return { status: 200 };
+    } catch (error) {
+      console.log('FAIL!!');
+      return { status: 400 };
+    }
+  } else {
+    console.log('FAIL!!');
+    return { status: 400 };
+  }
+};
+
+const toNonePeriod = async (year, semester, registrationStatus) => {
+  try {
+    await query(setAcademicStatusQuery(year, semester, 'none'));
+    if (registrationStatus === 'register') conductRegistrationResult(year, semester);
+    console.log('DONE!!');
+    return { status: 200 };
+  } catch (error) {
     console.log('FAIL!!');
     return { status: 400 };
   }

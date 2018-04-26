@@ -12,7 +12,7 @@ const getCourseSection = async ({ courseId, year, semester }) => {
 
   const courseDetail = await query(courseDetailQuery(courseId));
   let sectionList = await query(sectionDetailQuery(courseId, year, semester));
-  sectionList = sectionList.map((section, i) => ({ ...section, key: i }));
+  sectionList = sectionList.map((section, i) => ({ ...section, enrolled: `${section.enrolled}/${section.maxEnrollment}`, key: i }));
 
   console.log('DONE!!');
   return {
@@ -29,7 +29,8 @@ const courseDetailQuery = courseId =>
 
 // prettier-ignore
 const sectionDetailQuery = (courseId, year, semester) => 
-    `SELECT sectionNumber, teacher, time, enrolled, maxEnrollment
-      FROM Class NATURAL JOIN ClassSchedule NATURAL JOIN ClassTeacher NATURAL JOIN ClassStudying
-      WHERE courseId = '${courseId}' AND year = ${year} AND semester = ${semester};`;
+    `SELECT C.sectionNumber, teacher, enrolled, maxEnrollment, CS.time
+      FROM Class C NATURAL JOIN ClassTeacher NATURAL JOIN ClassStudying
+      LEFT JOIN ClassSchedule CS ON C.courseId = CS.courseId AND C.sectionNumber = CS.sectionNumber AND C.year = CS.year AND C.semester = CS.semester
+      WHERE C.courseId = '${courseId}' AND C.year = ${year} AND C.semester = ${semester};`;
 module.exports = getCourseSectionApi;

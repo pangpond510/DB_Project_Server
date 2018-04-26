@@ -44,6 +44,7 @@ const registerCourse = async ({ id, courseList }) => {
     const registerStatus = await query(canRegisterQuery(id, courseId));
     if (registerStatus.length > 0) {
       status = 'Error';
+      success = false;
       console.log('FAIL!!');
     }
 
