@@ -31,7 +31,7 @@ const manageRegisterPeriod = async ({ option }) => {
 
   if (option === 'register') return await toRegisterPeriod(year, semester, registrationStatus);
   else if (option === 'add/drop') return await toAddDropPeriod(year, semester, registrationStatus);
-  else if (option === 'withdraw') return await toWithdrawrPeriod(year, semester, registrationStatus);
+  else if (option === 'withdraw') return await toWithdrawPeriod(year, semester, registrationStatus);
   else if (option === 'none') return await toNonePeriod(year, semester, registrationStatus);
 };
 
