@@ -13,7 +13,7 @@ router.post('/student/registerCourse', require('./store/student/registerCourse.j
 router.post('/student/addDropCourse', require('./store/student/addDropCourse.js'));
 router.get('/student/:id/getCoursePendingList', require('./store/student/getCoursePendingList.js'));
 router.get('/student/:id/getRegisterResult', require('./store/student/getRegisterResult.js'));
-router.get('/student/getDocumentList', require('./store/student/getDocumentList.js'));
+router.get('/student/:id/getDocumentList', require('./store/student/getDocumentList.js'));
 router.post('/student/requestDocument', require('./store/student/requestDocument.js'));
 
 //teacher api
