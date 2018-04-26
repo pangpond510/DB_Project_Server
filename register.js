@@ -69,9 +69,24 @@ const main2 = async () => {
 };
 
 const main = async () => {
-  await main0();
+  //await main0();
   //await main1();
   //await main2();
+  const response = await fetch('http://localhost:7555/student/requestDocument', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: '5830000121',
+      docId: 'CR23'
+    })
+  });
+  if (response.status === 200) {
+    const json = await response.json();
+    console.log(json);
+  }
 };
 
 main();

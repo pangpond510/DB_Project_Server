@@ -232,14 +232,15 @@ CREATE TABLE `Request` (
   `sId` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `oId` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `documentId` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `requestDate` date DEFAULT NULL,
   `status` enum('Pending','Processing','Complete') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Pending',
+  `requestDate` date DEFAULT NULL,
+  `receiveDate` date DEFAULT NULL,
   PRIMARY KEY (`barcode`),
   KEY `request_ibfk_2` (`oId`),
   KEY `request_ibfk_3` (`documentId`),
   KEY `requestment_ibfk_1` (`sId`),
   CONSTRAINT `requestment_ibfk_2` FOREIGN KEY (`oId`) REFERENCES `Officer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -461,4 +462,4 @@ CREATE TABLE `User` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-26 19:48:41
+-- Dump completed on 2018-04-26 20:01:17

@@ -11,7 +11,7 @@ const getDocumentList = async () => {
   process.stdout.write(`Checking document . . . `);
 
   let docList = await query(availCourseQuery());
-  docList = docList.map((doc, i) => ({ document: `${doc.documentId} - ${doc.documentName}`, key: i }));
+  docList = docList.map((doc, i) => ({ ...doc, key: i }));
 
   console.log('DONE!!');
   return docList;
