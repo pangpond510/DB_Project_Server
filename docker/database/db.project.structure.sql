@@ -278,7 +278,7 @@ CREATE TABLE `RoomSchedule` (
   `day` enum('Sun','Mon','Tue','Wed','Thur','Fri','Sat') COLLATE utf8_unicode_ci NOT NULL,
   `startTime` time NOT NULL,
   `period` float NOT NULL,
-  PRIMARY KEY (`roomId`,`buildingName`,`day`,`startTime`,`period`),
+  PRIMARY KEY (`roomId`,`buildingName`,`day`,`startTime`,`courseId`,`sectionNumber`,`year`,`semester`),
   KEY `teachat_ibfk_2` (`courseId`,`sectionNumber`,`year`,`semester`),
   CONSTRAINT `teachat_bifk_2` FOREIGN KEY (`courseId`, `sectionNumber`, `year`, `semester`) REFERENCES `Class` (`courseId`, `sectionNumber`, `year`, `semester`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `teachat_ibfk_1` FOREIGN KEY (`roomId`, `buildingName`) REFERENCES `Room` (`roomId`, `buildingName`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -461,4 +461,4 @@ CREATE TABLE `User` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-26 17:08:47
+-- Dump completed on 2018-04-26 19:48:41
