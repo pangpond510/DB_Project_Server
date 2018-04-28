@@ -10,7 +10,7 @@ const getDocumentListApi = (req, res) => {
 const getDocumentList = async ({ id }) => {
   process.stdout.write(`Checking document for student ${id} . . . `);
 
-  let docList = await query(availCourseQuery());
+  let docList = await query(docListQuery());
   docList = docList.map((doc, i) => ({ ...doc, key: i }));
 
   let requestList = await query(getStudentRequestQuery(id));
@@ -24,7 +24,7 @@ const getDocumentList = async ({ id }) => {
 };
 
 // prettier-ignore
-const availCourseQuery = (year, semester) => 
+const docListQuery = () => 
     `SELECT * FROM Document;`;
 
 // prettier-ignore

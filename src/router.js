@@ -16,6 +16,7 @@ router.get('/student/:id/getRegisterResult', require('./store/student/getRegiste
 router.get('/student/:id/getDocumentList', require('./store/student/getDocumentList.js'));
 router.post('/student/requestDocument', require('./store/student/requestDocument.js'));
 router.get('/student/:id/getSchedule', require('./store/student/getSchedule.js'));
+router.get('/student/:id/getPaymentStatus', require('./store/student/getPaymentStatus.js'));
 
 //teacher api
 router.get('/teacher/:id/adviseeGrade', require('./store/teacher/getAdviseeGrade.js'));
