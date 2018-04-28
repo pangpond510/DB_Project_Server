@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
   port: '3307',
   user: 'root',
   password: 'Np4Rc5bnN8GuVMfT',
-  database: 'db_structure'
+  database: 'db_RegChula'
 });
 
 const corsConfig = {
