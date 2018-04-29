@@ -101,7 +101,7 @@ const canRegisterQuery = (sid, courseId) =>
       WHERE sId = '${sid}' AND courseId = '${courseId}' AND (status = 'Finish' OR status = 'Pending' OR status = 'Studying');`;
 
 // prettier-ignore
-const courseDetailQuery = () => 
+const courseDetailQuery = (courseId) => 
     `SELECT * FROM Course WHERE courseId = '${courseId}';`;
 
 // prettier-ignore
