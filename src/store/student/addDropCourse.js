@@ -128,6 +128,7 @@ const dropCourse = async (
     await query(dropCourseQuery(id, courseId, section, semester, year));
     console.log("DONE!!");
   } catch (error) {
+    console.log(error);
     console.log("FAIL!!");
   }
 };
@@ -166,7 +167,7 @@ const checkCourseStatus = (sid, courseId, section, semester, year) =>
 const dropCourseQuery = (sid, courseId, section, semester, year) =>
     `UPDATE Enrollment
       SET status = 'Drop'
-      WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester};`;
+      WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester} AND status='Studying';`;
 
 // prettier-ignore
 const checkApproveCourseQuery = (sid, semester, year) =>
