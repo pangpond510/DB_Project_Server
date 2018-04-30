@@ -3,7 +3,7 @@ const { query } = require('../utils.js');
 const addDropCourseApi = (req, res) => {
   addDropCourse(req.body).then(result => {
     if (result.success) {
-      res.send(result.detail);
+      res.send(result.courseList);
     } else {
       res.sendStatus(400);
     }
@@ -22,24 +22,23 @@ const addDropCourse = async ({ id, courseList }) => {
   }
   console.log('');
 
-  let detail = [];
   for (let i = 0; i < courseList.length; i++) {
     const { courseId, section, option } = courseList[i];
     const courseDetail = await query(courseDetailQuery(courseId));
     const { courseName, credit } = courseDetail[0];
 
-    let result;
     if (option === 'add') {
-      result = await addCourse(id, courseId, courseName, section, semester, year, credit);
+      await addCourse(id, courseId, courseName, section, semester, year, credit);
     } else if (option === 'drop') {
-      result = await dropCourse(id, courseId, courseName, section, semester, year, credit);
+      await dropCourse(id, courseId, courseName, section, semester, year, credit);
     }
-    result.key = i;
-    detail.push(result);
   }
 
+  let courseList = await query(checkApproveCourseQuery(id, semester, year));
+  courseList = courseList.map((course, i) => ({ ...course, key: i }));
+
   console.log('add/drop DONE!!');
-  return { success: true, detail };
+  return { success: true, courseList };
 };
 
 const addCourse = async (id, courseId, courseName, section, semester, year, credit) => {
@@ -61,12 +60,9 @@ const addCourse = async (id, courseId, courseName, section, semester, year, cred
 
   try {
     await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Studying'));
-
     console.log('DONE!!');
-    return { courseId, courseName, section, credit, status: 'Studying' };
   } catch (error) {
     console.log('FAIL!!');
-    return { courseId, courseName, section, credit, status: 'Error' };
   }
 };
 
@@ -82,12 +78,9 @@ const dropCourse = async (id, courseId, courseName, section, semester, year, cre
 
   try {
     await query(dropCourseQuery(id, courseId, section, semester, year));
-
     console.log('DONE!!');
-    return { courseId, courseName, section, credit, status: 'Drop' };
   } catch (error) {
     console.log('FAIL!!');
-    return { courseId, courseName, section, credit, status: 'Error' };
   }
 };
 
@@ -126,5 +119,11 @@ const dropCourseQuery = (sid, courseId, section, semester, year) =>
     `UPDATE Enrollment
       SET status = 'Drop'
       WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester};`;
+
+// prettier-ignore
+const checkApproveCourseQuery = (sid, semester, year) =>
+`SELECT courseId, courseName, shortName, sectionNumber, credit, status
+  FROM Enrollment NATURAL JOIN Course 
+  WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND ( status = 'Studying' );`;
 
 module.exports = addDropCourseApi;
