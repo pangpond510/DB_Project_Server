@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.20, for Linux (x86_64)
 --
--- Host: 127.0.0.1    Database: databaseProject
+-- Host: 127.0.0.1    Database: db_RegChula
 -- ------------------------------------------------------
 -- Server version	5.7.21
 
@@ -67,6 +67,55 @@ CREATE TABLE `Class` (
   CONSTRAINT `class_ibfk_2` FOREIGN KEY (`year`, `semester`) REFERENCES `AcademicPeriod` (`year`, `semester`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `ClassSchedule`
+--
+
+DROP TABLE IF EXISTS `ClassSchedule`;
+/*!50001 DROP VIEW IF EXISTS `ClassSchedule`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `ClassSchedule` AS SELECT 
+ 1 AS `courseId`,
+ 1 AS `sectionNumber`,
+ 1 AS `year`,
+ 1 AS `semester`,
+ 1 AS `time`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `ClassStudying`
+--
+
+DROP TABLE IF EXISTS `ClassStudying`;
+/*!50001 DROP VIEW IF EXISTS `ClassStudying`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `ClassStudying` AS SELECT 
+ 1 AS `courseId`,
+ 1 AS `sectionNumber`,
+ 1 AS `year`,
+ 1 AS `semester`,
+ 1 AS `enrolled`,
+ 1 AS `maxEnrollment`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `ClassTeacher`
+--
+
+DROP TABLE IF EXISTS `ClassTeacher`;
+/*!50001 DROP VIEW IF EXISTS `ClassTeacher`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `ClassTeacher` AS SELECT 
+ 1 AS `courseId`,
+ 1 AS `sectionNumber`,
+ 1 AS `year`,
+ 1 AS `semester`,
+ 1 AS `teacher`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `Course`
@@ -200,7 +249,7 @@ CREATE TABLE `Request` (
   CONSTRAINT `requestment_ibfk_1` FOREIGN KEY (`documentId`) REFERENCES `Document` (`documentId`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `requestment_ibfk_2` FOREIGN KEY (`oId`) REFERENCES `Officer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `requestment_ibfk_3` FOREIGN KEY (`sId`) REFERENCES `Student` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -364,6 +413,60 @@ CREATE TABLE `User` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Final view structure for view `ClassSchedule`
+--
+
+/*!50001 DROP VIEW IF EXISTS `ClassSchedule`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `ClassSchedule` AS select `Class`.`courseId` AS `courseId`,`Class`.`sectionNumber` AS `sectionNumber`,`Class`.`year` AS `year`,`Class`.`semester` AS `semester`,group_concat(concat(`RoomSchedule`.`day`,' (',`RoomSchedule`.`startTime`,' - ',(`RoomSchedule`.`startTime` + interval `RoomSchedule`.`period` hour_minute),') at ',`RoomSchedule`.`roomId`,' (',`RoomSchedule`.`buildingName`,')') order by `RoomSchedule`.`day` ASC,`RoomSchedule`.`startTime` ASC separator '\n            ') AS `time` from (`Class` join `RoomSchedule` on(((`Class`.`courseId` = `RoomSchedule`.`courseId`) and (`Class`.`sectionNumber` = `RoomSchedule`.`sectionNumber`) and (`Class`.`year` = `RoomSchedule`.`year`) and (`Class`.`semester` = `RoomSchedule`.`semester`)))) group by `Class`.`courseId`,`Class`.`sectionNumber`,`Class`.`year`,`Class`.`semester` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `ClassStudying`
+--
+
+/*!50001 DROP VIEW IF EXISTS `ClassStudying`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `ClassStudying` AS select `C`.`courseId` AS `courseId`,`C`.`sectionNumber` AS `sectionNumber`,`C`.`year` AS `year`,`C`.`semester` AS `semester`,ifnull(`Ce`.`enrolled`,0) AS `enrolled`,`C`.`maxEnrollment` AS `maxEnrollment` from (`db_RegChula`.`Class` `C` left join (select `db_RegChula`.`Enrollment`.`courseId` AS `courseId`,`db_RegChula`.`Enrollment`.`sectionNumber` AS `sectionNumber`,`db_RegChula`.`Enrollment`.`year` AS `year`,`db_RegChula`.`Enrollment`.`semester` AS `semester`,count(`db_RegChula`.`Enrollment`.`sId`) AS `enrolled` from `db_RegChula`.`Enrollment` where (`db_RegChula`.`Enrollment`.`status` = 'Studying') group by `db_RegChula`.`Enrollment`.`courseId`,`db_RegChula`.`Enrollment`.`sectionNumber`,`db_RegChula`.`Enrollment`.`year`,`db_RegChula`.`Enrollment`.`semester`) `Ce` on(((`C`.`courseId` = `Ce`.`courseId`) and (`C`.`sectionNumber` = `Ce`.`sectionNumber`) and (`C`.`year` = `Ce`.`year`) and (`C`.`semester` = `Ce`.`semester`)))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `ClassTeacher`
+--
+
+/*!50001 DROP VIEW IF EXISTS `ClassTeacher`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `ClassTeacher` AS select `Class`.`courseId` AS `courseId`,`Class`.`sectionNumber` AS `sectionNumber`,`Class`.`year` AS `year`,`Class`.`semester` AS `semester`,group_concat(distinct `Teacher`.`code` separator ', ') AS `teacher` from ((`Class` join `Teach` on(((`Class`.`courseId` = `Teach`.`courseId`) and (`Class`.`sectionNumber` = `Teach`.`sectionNumber`) and (`Class`.`year` = `Teach`.`year`) and (`Class`.`semester` = `Teach`.`semester`)))) join `Teacher` on((`Teach`.`tId` = `Teacher`.`id`))) group by `Class`.`courseId`,`Class`.`sectionNumber`,`Class`.`year`,`Class`.`semester` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -374,4 +477,4 @@ CREATE TABLE `User` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-28 11:34:53
+-- Dump completed on 2018-04-30 17:34:20
