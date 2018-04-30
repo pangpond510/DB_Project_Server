@@ -49,15 +49,12 @@ const main2 = async () => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      id: 'student2',
+      id: '6130000121',
       courseList: [
         {
           courseId: '2110327',
-          section: '33'
-        },
-        {
-          courseId: '2110332',
-          section: '33'
+          section: '33',
+          option: 'add'
         }
       ]
     })
@@ -71,7 +68,7 @@ const main2 = async () => {
 const main = async () => {
   //await main0();
   //await main1();
-  //await main2();
+  await main2();
   /*
   const response = await fetch('http://localhost:7555/student/requestDocument', {
     method: 'POST',
@@ -89,21 +86,6 @@ const main = async () => {
     console.log(json);
   }
   */
-  const response = await fetch('http://localhost:7555/officer/submitRequest', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      barcode: 13,
-      status: 'Processing'
-    })
-  });
-  if (response.status === 200) {
-    const json = await response.json();
-    console.log(json);
-  }
 };
 
 main();
