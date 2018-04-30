@@ -1,4 +1,4 @@
-const { query } = require('../utils.js');
+const { query } = require("../utils.js");
 
 const addDropCourseApi = (req, res) => {
   addDropCourse(req.body).then(result => {
@@ -16,71 +16,119 @@ const addDropCourse = async ({ id, courseList }) => {
 
   const result = await query(checkAcademicStatusQuery());
   const { year, semester, registrationStatus } = result[0];
-  if (registrationStatus !== 'add/drop') {
-    console.log('register FAIL!!');
+  if (registrationStatus !== "add/drop") {
+    console.log("register FAIL!!");
     return { success: false };
   }
-  console.log('');
+  console.log("");
 
   for (let i = 0; i < courseList.length; i++) {
     const { courseId, section, option } = courseList[i];
     const courseDetail = await query(courseDetailQuery(courseId));
     const { courseName, credit } = courseDetail[0];
 
-    if (option === 'add') {
-      await addCourse(id, courseId, courseName, section, semester, year, credit);
-    } else if (option === 'drop') {
-      await dropCourse(id, courseId, courseName, section, semester, year, credit);
+    if (option === "add") {
+      await addCourse(
+        id,
+        courseId,
+        courseName,
+        section,
+        semester,
+        year,
+        credit
+      );
+    } else if (option === "drop") {
+      await dropCourse(
+        id,
+        courseId,
+        courseName,
+        section,
+        semester,
+        year,
+        credit
+      );
     }
   }
 
-  let courseList = await query(checkApproveCourseQuery(id, semester, year));
-  courseList = courseList.map((course, i) => ({ ...course, key: i }));
+  let courseApproveList = await query(
+    checkApproveCourseQuery(id, semester, year)
+  );
+  courseApproveList = courseApproveList.map((course, i) => ({
+    ...course,
+    key: i
+  }));
 
-  console.log('add/drop DONE!!');
-  return { success: true, courseList };
+  console.log("add/drop DONE!!");
+  return { success: true, courseApproveList };
 };
 
-const addCourse = async (id, courseId, courseName, section, semester, year, credit) => {
-  process.stdout.write(`   stduent ${id} adds course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
+const addCourse = async (
+  id,
+  courseId,
+  courseName,
+  section,
+  semester,
+  year,
+  credit
+) => {
+  process.stdout.write(
+    `   stduent ${id} adds course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `
+  );
 
   //check not studying or pass this course
   const status = await query(canRegisterQuery(id, courseId));
   if (status.length > 0) {
-    console.log('FAIL!!');
-    return { courseId, courseName, section, credit, status: 'Error' };
+    console.log("FAIL 0!!");
+    return { courseId, courseName, section, credit, status: "Error" };
   }
 
   // check enroll is not full
-  const result = await query(checkEnrollCountQuery(courseId, section, semester, year));
+  const result = await query(
+    checkEnrollCountQuery(courseId, section, semester, year)
+  );
   if (result[0] && result[0].count >= result[0].maxEnrollment) {
-    console.log('FAIL!!');
-    return { courseId, courseName, section, credit, status: 'Error' };
+    console.log("FAIL 1!!");
+    return { courseId, courseName, section, credit, status: "Error" };
   }
 
   try {
-    await query(sql.addCourseQuery(id, courseId, section, semester, year, 'Studying'));
-    console.log('DONE!!');
+    await query(
+      addCourseQuery(id, courseId, section, semester, year, "Studying")
+    );
+    console.log("DONE!!");
   } catch (error) {
-    console.log('FAIL!!');
+    console.log(error);
+    console.log("FAIL 2!!");
   }
 };
 
-const dropCourse = async (id, courseId, courseName, section, semester, year, credit) => {
-  process.stdout.write(`   stduent ${id} drops course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
+const dropCourse = async (
+  id,
+  courseId,
+  courseName,
+  section,
+  semester,
+  year,
+  credit
+) => {
+  process.stdout.write(
+    `   stduent ${id} drops course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `
+  );
 
   // check studying this course
-  const status = await query(checkCourseStatus(id, courseId, section, semester, year));
-  if (status.length === 0 || status[0].status !== 'Studying') {
-    console.log('FAIL!!');
-    return { courseId, courseName, section, credit, status: 'Error' };
+  const status = await query(
+    checkCourseStatus(id, courseId, section, semester, year)
+  );
+  if (status.length === 0 || status[0].status !== "Studying") {
+    console.log("FAIL!!");
+    return { courseId, courseName, section, credit, status: "Error" };
   }
 
   try {
     await query(dropCourseQuery(id, courseId, section, semester, year));
-    console.log('DONE!!');
+    console.log("DONE!!");
   } catch (error) {
-    console.log('FAIL!!');
+    console.log("FAIL!!");
   }
 };
 
