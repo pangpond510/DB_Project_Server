@@ -2,14 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const { connection, corsConfig } = require('./src/constant.js');
+const { connection, corsConfig } = require('./constant.js');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors(corsConfig));
 
-app.use('/', require('./src/router.js'));
+app.use('/', require('./router.js'));
 
 connection.connect(function(err) {
   if (err) throw err;
