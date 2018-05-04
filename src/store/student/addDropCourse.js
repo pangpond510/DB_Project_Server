@@ -16,8 +16,8 @@ const addDropCourse = async ({ id, courseList }) => {
 
   const result = await query(checkAcademicStatusQuery());
   const { year, semester, registrationStatus } = result[0];
-  if (registrationStatus !== 'add/drop') {
-    console.log('withdraw FAIL!!');
+  if (registrationStatus !== 'add/drop' && registrationStatus !== 'withdraw') {
+    console.log('add/drop FAIL!!');
     return { success: false };
   }
   console.log('');
@@ -26,9 +26,11 @@ const addDropCourse = async ({ id, courseList }) => {
     const { courseId, section, option } = courseList[i];
 
     if (option === 'add') {
-      await addCourse(id, courseId, courseName, section, semester, year, credit);
+      await addCourse(id, courseId, section, semester, year);
     } else if (option === 'drop') {
-      await dropCourse(id, courseId, courseName, section, semester, year, credit);
+      await dropCourse(id, courseId, section, semester, year);
+    } else if (option === 'withdraw') {
+      await withdrawCourse(id, courseId, section, semester, year);
     }
   }
 
@@ -84,6 +86,24 @@ const dropCourse = async (id, courseId, section, semester, year) => {
   }
 };
 
+const withdrawCourse = async (id, courseId, section, semester, year) => {
+  process.stdout.write(`   stduent ${id} withdraws course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
+
+  // check studying this course
+  const status = await query(checkCourseStatus(id, courseId, section, semester, year));
+  if (status.length === 0 || status[0].status !== 'Studying') {
+    console.log('FAIL!!');
+  }
+
+  try {
+    await query(withdrawCourseQuery(id, courseId, section, semester, year));
+    console.log('DONE!!');
+  } catch (error) {
+    console.log(error);
+    console.log('FAIL!!');
+  }
+};
+
 // prettier-ignore
 const checkAcademicStatusQuery = () => 
     `SELECT * FROM AcademicPeriod WHERE status ='now' ;`;
@@ -114,6 +134,12 @@ const checkCourseStatus = (sid, courseId, section, semester, year) =>
 const dropCourseQuery = (sid, courseId, section, semester, year) =>
     `UPDATE Enrollment
       SET status = 'Drop'
+      WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester} AND status='Studying';`;
+
+// prettier-ignore
+const withdrawCourseQuery = (sid, courseId, section, semester, year) =>
+    `UPDATE Enrollment
+      SET status = 'Withdraw'
       WHERE Sid='${sid}' AND courseId='${courseId}' AND sectionNumber='${section}' AND year=${year} AND semester=${semester} AND status='Studying';`;
 
 // prettier-ignore
