@@ -11,6 +11,7 @@ router.get('/student/getAvailCourse/:year/:semester', require('./store/student/g
 router.get('/student/getCourseSection/:courseId/:year/:semester', require('./store/student/getCourseSection.js'));
 router.post('/student/registerCourse', require('./store/student/registerCourse.js'));
 router.post('/student/addDropCourse', require('./store/student/addDropCourse.js'));
+router.post('/student/withdrawCourse', require('./store/student/withdrawCourse.js'));
 router.get('/student/:id/getCoursePendingList', require('./store/student/getCoursePendingList.js'));
 router.get('/student/:id/getRegisterResult', require('./store/student/getRegisterResult.js'));
 router.get('/student/:id/getApproveCourse', require('./store/student/getApproveCourse.js'));

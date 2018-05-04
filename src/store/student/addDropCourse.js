@@ -17,15 +17,13 @@ const addDropCourse = async ({ id, courseList }) => {
   const result = await query(checkAcademicStatusQuery());
   const { year, semester, registrationStatus } = result[0];
   if (registrationStatus !== 'add/drop') {
-    console.log('register FAIL!!');
+    console.log('withdraw FAIL!!');
     return { success: false };
   }
   console.log('');
 
   for (let i = 0; i < courseList.length; i++) {
     const { courseId, section, option } = courseList[i];
-    const courseDetail = await query(courseDetailQuery(courseId));
-    const { courseName, credit } = courseDetail[0];
 
     if (option === 'add') {
       await addCourse(id, courseId, courseName, section, semester, year, credit);
@@ -44,19 +42,19 @@ const addDropCourse = async ({ id, courseList }) => {
   return { success: true, courseApproveList };
 };
 
-const addCourse = async (id, courseId, courseName, section, semester, year, credit) => {
+const addCourse = async (id, courseId, section, semester, year) => {
   process.stdout.write(`   stduent ${id} adds course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
   //check not studying or pass this course
   const status = await query(canRegisterQuery(id, courseId));
   if (status.length > 0) {
-    console.log('FAIL 0!!');
+    console.log('FAIL!!');
   }
 
   // check enroll is not full
   const result = await query(checkEnrollCountQuery(courseId, section, semester, year));
   if (result[0] && result[0].count >= result[0].maxEnrollment) {
-    console.log('FAIL 1!!');
+    console.log('FAIL!!');
   }
 
   try {
@@ -64,17 +62,17 @@ const addCourse = async (id, courseId, courseName, section, semester, year, cred
     console.log('DONE!!');
   } catch (error) {
     console.log(error);
-    console.log('FAIL 2!!');
+    console.log('FAIL!!');
   }
 };
 
-const dropCourse = async (id, courseId, courseName, section, semester, year, credit) => {
+const dropCourse = async (id, courseId, section, semester, year) => {
   process.stdout.write(`   stduent ${id} drops course: ${courseId} section: ${section} semester: ${year}/${semester} . . . `);
 
   // check studying this course
   const status = await query(checkCourseStatus(id, courseId, section, semester, year));
   if (status.length === 0 || status[0].status !== 'Studying') {
-    console.log('FAIL 0!!');
+    console.log('FAIL!!');
   }
 
   try {
@@ -82,7 +80,7 @@ const dropCourse = async (id, courseId, courseName, section, semester, year, cre
     console.log('DONE!!');
   } catch (error) {
     console.log(error);
-    console.log('FAIL 1!!');
+    console.log('FAIL!!');
   }
 };
 
@@ -94,10 +92,6 @@ const checkAcademicStatusQuery = () =>
 const canRegisterQuery = (sid, courseId) =>
     `SELECT * from Enrollment
       WHERE sId = '${sid}' AND courseId = '${courseId}' AND (status = 'Finish' OR status = 'Pending' OR status = 'Studying');`;
-
-// prettier-ignore
-const courseDetailQuery = (courseId) => 
-    `SELECT * FROM Course WHERE courseId = '${courseId}';`;
 
 // prettier-ignore
 const checkEnrollCountQuery = (courseId, section, semester, year) =>
@@ -124,8 +118,8 @@ const dropCourseQuery = (sid, courseId, section, semester, year) =>
 
 // prettier-ignore
 const checkApproveCourseQuery = (sid, semester, year) =>
-`SELECT courseId, courseName, shortName, sectionNumber, credit, status
-  FROM Enrollment NATURAL JOIN Course 
-  WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND status = 'Studying';`;
+    `SELECT courseId, courseName, shortName, sectionNumber, credit, status
+      FROM Enrollment NATURAL JOIN Course 
+      WHERE sId = '${sid}' AND semester = ${semester} AND year = ${year} AND status = 'Studying';`;
 
 module.exports = addDropCourseApi;
