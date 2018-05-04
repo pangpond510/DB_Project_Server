@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon .",
+    "start": "node .",
     "test": "mocha \"test/**/*.spec.js\""
   },
   "repository": {
