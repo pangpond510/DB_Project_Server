@@ -1,4 +1,4 @@
-const { query } = require('../utils.js');
+const { query } = require("../utils.js");
 
 const getPaymentStatusApi = (req, res) => {
   getPaymentStatus(req.params).then(result => {
@@ -13,12 +13,12 @@ const getPaymentStatus = async ({ id }) => {
   let payment = await query(paymentQuery(id));
   payment = payment.map((doc, i) => ({ ...doc, key: i }));
 
-  console.log('DONE!!');
+  console.log("DONE!!");
   return payment;
 };
 
 // prettier-ignore
 const paymentQuery = (id) => 
-    `SELECT * FROM StudentPayment WHERE sId = '${id}';`;
+    `SELECT * FROM StudentPayment WHERE sId = '${id}' ORDER BY year DESC, semester DESC;`;
 
 module.exports = getPaymentStatusApi;
