@@ -15,7 +15,7 @@ const getSchedule = async ({ id }) => {
   let schedule = await query(checkScheduleQuery(id, year, semester));
   schedule = schedule.map((s, i) => ({ ...s, key: i }));
 
-  //console.log('DONE!!');
+  console.log('DONE!!');
   return schedule;
 };
 

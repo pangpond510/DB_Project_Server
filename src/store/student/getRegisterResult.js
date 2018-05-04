@@ -10,7 +10,7 @@ const getRegisterResultApi = (req, res) => {
 };
 
 const getRegisterResult = async ({ id }) => {
-  console.log(`check register result of student ${id} . . . `);
+  process.stdout.write(`check register result of student ${id} . . . `);
 
   const result = await query(checkAcademicStatusQuery());
   const { year, semester, registrationStatus } = result[0];
