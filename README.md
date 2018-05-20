@@ -1,1 +1,2 @@
 # DB_Project_Server
+This repositort is a part of 2110422 Database Management Systems Design course project of Chulalongkorn University. The full application is in <https://github.com/pangpond510/DB_Project_App>
