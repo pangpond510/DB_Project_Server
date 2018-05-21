@@ -11,7 +11,7 @@ $ npm install
 
 ### Start Server
 
-1. You have to configure your database host and port in src/constant.js
+1. You have to set your database configuration in src/constant.js
 2. You can start backend server by running
 ```
 $ npm start
